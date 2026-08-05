@@ -20,6 +20,14 @@ internal object LocalNotificationSnapshot {
             put("title", title)
             put("body", body)
             put("data", dataJson(data))
+            put(
+                "notification",
+                JSONObject().apply {
+                    put("notificationId", notificationId)
+                    put("title", title)
+                    put("body", body)
+                },
+            )
         }
     }
 

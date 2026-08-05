@@ -9,7 +9,7 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 ## Implementation Status
 
 - Phase 1 complete: independent debug/no-op modules and sample capture paths.
-- Phase 2 complete: Compose list, search, filters, status affordances, and detail tabs.
+- Phase 2 complete: Compose list, search, source filters, category affordances, and detail tabs.
 - Phase 3 complete: opt-in persistent notification with payload-safe summaries.
 - Phase 4 complete: section copy, single-message sharing, filtered export, and privacy guidance.
 - Publication ready: both library artifacts share version `0.1.0` and publish through the Maven Central workflow.
@@ -41,12 +41,9 @@ The library starts from the Hime-incubated implementation, then grows toward a D
   - all
   - FCM / remote message
   - local notification
-  - future tags
-- Add status/category affordances inspired by Dari:
-  - success
-  - in-progress
-  - error
-  - informational/local
+- Add source/category affordances inspired by Dari:
+  - FCM / remote message
+  - local notification
 - Add search over:
   - title/body
   - source

@@ -276,7 +276,7 @@ private fun NotificationMessageCard(
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                StatusBadge(item.status)
+                CategoryBadge(item.tag)
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = item.source,
@@ -315,12 +315,11 @@ private fun NotificationMessageCard(
 }
 
 @Composable
-private fun StatusBadge(status: NotificationSnapshotStatus) {
-    val color = when (status) {
-        NotificationSnapshotStatus.SUCCESS -> Color(0xFF238636)
-        NotificationSnapshotStatus.IN_PROGRESS -> Color(0xFFD29922)
-        NotificationSnapshotStatus.ERROR -> MaterialTheme.colorScheme.error
-        NotificationSnapshotStatus.INFORMATIONAL -> MaterialTheme.colorScheme.primary
+private fun CategoryBadge(tag: NotificationFilterTag) {
+    val color = when (tag) {
+        NotificationFilterTag.FCM -> Color(0xFF238636)
+        NotificationFilterTag.LOCAL -> MaterialTheme.colorScheme.primary
+        NotificationFilterTag.ALL -> MaterialTheme.colorScheme.tertiary
     }
 
     Surface(
@@ -334,7 +333,7 @@ private fun StatusBadge(status: NotificationSnapshotStatus) {
         ) {
             Surface(modifier = Modifier.size(7.dp), color = color, shape = CircleShape) {}
             Spacer(Modifier.width(5.dp))
-            Text(text = status.label, style = MaterialTheme.typography.labelSmall)
+            Text(text = tag.label, style = MaterialTheme.typography.labelSmall)
         }
     }
 }
@@ -416,7 +415,7 @@ private fun OverviewTab(item: NotificationSnapshotUiModel) {
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
     ) {
-        StatusBadge(item.status)
+        CategoryBadge(item.tag)
         Spacer(Modifier.height(16.dp))
         item.overview.forEachIndexed { index, (label, value) ->
             Column(modifier = Modifier.padding(vertical = 10.dp)) {
@@ -469,6 +468,6 @@ private fun List<NotificationSnapshotUiModel>.toJsonExport(): String {
 
 private fun List<NotificationSnapshotUiModel>.toTextExport(): String {
     return joinToString(separator = "\n\n---\n\n") { item ->
-        "${item.receivedAt} · ${item.source} · ${item.status.label}\n${item.rawJson}"
+        "${item.receivedAt} · ${item.source} · ${item.tag.label}\n${item.rawJson}"
     }
 }

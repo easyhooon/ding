@@ -16,8 +16,8 @@ Initial supported capture paths:
 Inspector UI:
 
 - compact newest-first Compose message list
-- All / FCM / Local filters and payload search
-- status/category badges
+- FCM / Local source filters and payload search
+- source/category badges
 - Overview / Data / Notification / Raw JSON detail tabs
 - per-section copy, single-message share, and filtered export
 
