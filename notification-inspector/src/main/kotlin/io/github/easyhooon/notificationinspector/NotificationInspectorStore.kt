@@ -1,6 +1,7 @@
 package io.github.easyhooon.notificationinspector
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -29,8 +30,12 @@ internal class NotificationInspectorStore(context: Context) {
         onStored: suspend () -> Unit = {},
     ) {
         scope.launch {
-            append(snapshot)
-            onStored()
+            runCatching {
+                append(snapshot)
+                onStored()
+            }.onFailure { error ->
+                Log.w(TAG, "Failed to store notification snapshot", error)
+            }
         }
     }
 
@@ -104,6 +109,7 @@ internal class NotificationInspectorStore(context: Context) {
     }
 
     private companion object {
+        private const val TAG = "NotificationInspector"
         private const val DATA_STORE_NAME = "notification_inspector.preferences_pb"
         private const val KEY_MESSAGES_NAME = "messages"
         private const val KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME = "persistent_notification_enabled"
