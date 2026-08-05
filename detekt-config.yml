@@ -1,0 +1,53 @@
+complexity:
+    LongMethod:
+        threshold: 200
+    CyclomaticComplexMethod:
+        threshold: 40
+    LongParameterList:
+        active: false
+    TooManyFunctions:
+        active: false
+    LargeClass:
+        active: false
+
+performance:
+    SpreadOperator:
+        active: false
+
+formatting:
+    TrailingCommaOnCallSite:
+        active: true
+    TrailingCommaOnDeclarationSite:
+        active: true
+    ImportOrdering:
+        active: false
+    MaximumLineLength:
+        active: false
+    Indentation:
+        indentSize: 4
+    Filename:
+        active: false
+    PackageName:
+        active: false
+
+style:
+    MagicNumber:
+        active: false
+    ForbiddenComment:
+        active: false
+    ThrowsCount:
+        active: false
+    ReturnCount:
+        active: false
+
+exceptions:
+    TooGenericExceptionCaught:
+        active: false
+
+naming:
+    TopLevelPropertyNaming:
+        constantPattern: '[A-Z][A-Za-z0-9_]*'
+    MatchingDeclarationName:
+        active: false
+    VariableNaming:
+        active: false
