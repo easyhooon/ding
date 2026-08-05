@@ -12,7 +12,7 @@ Release `notification-inspector` and `notification-inspector-noop` together. All
 
 ## 1. Verify the version
 
-Read `notification-inspector` in `gradle/libs.versions.toml`. If a version argument is supplied and differs, update the catalog before continuing. Both published modules must use that single catalog version.
+Read `notification-inspector` in `gradle/libs.versions.toml`. If a version argument is supplied, it must match the catalog value. If it differs, stop and ask the user to update and commit the catalog version before restarting the release. Both published modules must use that single catalog version.
 
 ## 2. Verify prerequisites
 
