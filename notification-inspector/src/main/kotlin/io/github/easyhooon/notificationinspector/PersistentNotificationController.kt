@@ -14,6 +14,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 
 internal object PersistentNotificationController {
@@ -22,16 +24,19 @@ internal object PersistentNotificationController {
     private const val NOTIFICATION_ID = 0x4E49
     private const val OPEN_REQUEST_CODE = 0x4E49
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val stateMutex = Mutex()
 
     fun setEnabled(context: Context, enabled: Boolean) {
         val appContext = context.applicationContext
         val store = NotificationInspectorStore(appContext)
         scope.launch {
-            store.setPersistentNotificationEnabled(enabled)
-            if (enabled) {
-                show(appContext, store.readAll())
-            } else {
-                notificationManager(appContext).cancel(NOTIFICATION_ID)
+            stateMutex.withLock {
+                store.setPersistentNotificationEnabled(enabled)
+                if (enabled) {
+                    show(appContext, store.readAll())
+                } else {
+                    notificationManager(appContext).cancel(NOTIFICATION_ID)
+                }
             }
         }
     }
@@ -44,8 +49,10 @@ internal object PersistentNotificationController {
     }
 
     suspend fun refreshIfEnabled(context: Context, store: NotificationInspectorStore) {
-        if (store.isPersistentNotificationEnabled()) {
-            show(context.applicationContext, store.readAll())
+        stateMutex.withLock {
+            if (store.isPersistentNotificationEnabled()) {
+                show(context.applicationContext, store.readAll())
+            }
         }
     }
 
