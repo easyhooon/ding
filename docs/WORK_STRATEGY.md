@@ -6,6 +6,14 @@ Build `easyhooon/notification-inspector` as a reusable Android debug library for
 
 The library starts from the Hime-incubated implementation, then grows toward a Dari-like developer experience without coupling itself to Hime.
 
+## Implementation Status
+
+- Phase 1 complete: independent debug/no-op modules and sample capture paths.
+- Phase 2 complete: Compose list, search, filters, status affordances, and detail tabs.
+- Phase 3 complete: opt-in persistent notification with payload-safe summaries.
+- Phase 4 complete: section copy, single-message sharing, filtered export, and privacy guidance.
+- Publication ready: both library artifacts share version `0.1.0` and publish through the Maven Central workflow.
+
 ## Scope
 
 ### Phase 1: Repository Extraction

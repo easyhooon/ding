@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="notification_inspector_name">Notification Inspector</string>
+    <string name="notification_inspector_channel_name">Notification Inspector</string>
+    <string name="notification_inspector_channel_description">Persistent access to captured debug notification payloads</string>
+    <string name="notification_inspector_persistent_title">Notification Inspector</string>
+    <string name="notification_inspector_persistent_empty">Ready to inspect notification payloads</string>
+    <string name="notification_inspector_other_category">Other</string>
+    <plurals name="notification_inspector_persistent_summary">
+        <item quantity="one">%1$d captured message · Latest: %2$s</item>
+        <item quantity="other">%1$d captured messages · Latest: %2$s</item>
+    </plurals>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -23,9 +24,13 @@ internal class NotificationInspectorStore(context: Context) {
     private val appContext = context.applicationContext
     private val dataStore = dataStore(appContext)
 
-    fun appendAsync(snapshot: JSONObject) {
+    fun appendAsync(
+        snapshot: JSONObject,
+        onStored: suspend () -> Unit = {},
+    ) {
         scope.launch {
             append(snapshot)
+            onStored()
         }
     }
 
@@ -40,6 +45,20 @@ internal class NotificationInspectorStore(context: Context) {
             dataStore.edit { preferences ->
                 preferences.remove(KEY_MESSAGES)
             }
+        }
+    }
+
+    suspend fun setPersistentNotificationEnabled(enabled: Boolean) {
+        mutex.withLock {
+            dataStore.edit { preferences ->
+                preferences[KEY_PERSISTENT_NOTIFICATION_ENABLED] = enabled
+            }
+        }
+    }
+
+    suspend fun isPersistentNotificationEnabled(): Boolean {
+        return mutex.withLock {
+            readPreferences()[KEY_PERSISTENT_NOTIFICATION_ENABLED] ?: false
         }
     }
 
@@ -61,13 +80,15 @@ internal class NotificationInspectorStore(context: Context) {
     }
 
     private suspend fun readMessages(): JSONArray {
-        val preferences = runCatching {
+        return parseArray(readPreferences()[KEY_MESSAGES])
+    }
+
+    private suspend fun readPreferences(): Preferences {
+        return runCatching {
             dataStore.data.first()
         }.recoverCatching { error ->
             if (error is IOException) emptyPreferences() else throw error
         }.getOrThrow()
-
-        return parseArray(preferences[KEY_MESSAGES])
     }
 
     private fun parseArray(raw: String?): JSONArray {
@@ -85,8 +106,11 @@ internal class NotificationInspectorStore(context: Context) {
     private companion object {
         private const val DATA_STORE_NAME = "notification_inspector.preferences_pb"
         private const val KEY_MESSAGES_NAME = "messages"
+        private const val KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME = "persistent_notification_enabled"
         private const val MAX_MESSAGES = 50
         private val KEY_MESSAGES = stringPreferencesKey(KEY_MESSAGES_NAME)
+        private val KEY_PERSISTENT_NOTIFICATION_ENABLED =
+            booleanPreferencesKey(KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME)
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         private val mutex = Mutex()
         private val stores = mutableMapOf<String, DataStore<Preferences>>()
