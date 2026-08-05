@@ -23,10 +23,6 @@ internal data class NotificationSnapshotUiModel(
     }
 
     companion object {
-        private val timestampFormatter = DateTimeFormatter
-            .ofPattern("MMM d, HH:mm:ss", Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
-
         fun from(snapshot: JSONObject): NotificationSnapshotUiModel {
             val tag = NotificationFilterTag.entries.firstOrNull {
                 it.jsonValue == snapshot.optString("tag")
@@ -35,7 +31,7 @@ internal data class NotificationSnapshotUiModel(
             val receivedAtMillis = snapshot.optLong("receivedAtMillis")
             val receivedAt = receivedAtMillis
                 .takeIf { it > 0L }
-                ?.let { timestampFormatter.format(Instant.ofEpochMilli(it)) }
+                ?.let(::formatTimestamp)
                 ?: "Unknown time"
             val status = NotificationSnapshotStatus.from(snapshot, tag)
             val type = snapshot.stringValue("type") ?: "unknown"
@@ -76,6 +72,13 @@ internal data class NotificationSnapshotUiModel(
 
         private fun firstNonBlank(vararg values: String?): String? {
             return values.firstOrNull { !it.isNullOrBlank() }
+        }
+
+        private fun formatTimestamp(timestampMillis: Long): String {
+            return DateTimeFormatter
+                .ofPattern("MMM d, HH:mm:ss", Locale.getDefault())
+                .withZone(ZoneId.systemDefault())
+                .format(Instant.ofEpochMilli(timestampMillis))
         }
     }
 }

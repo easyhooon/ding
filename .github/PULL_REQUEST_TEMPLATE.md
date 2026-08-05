@@ -18,6 +18,8 @@
 - [ ] `:notification-inspector-noop:ktlintCheck`
 - [ ] `:notification-inspector:detekt`
 - [ ] `:notification-inspector-noop:detekt`
+- [ ] `:notification-inspector:lintRelease`
+- [ ] `:notification-inspector-noop:lintRelease`
 - [ ] `:sample:assembleDebug`
 - [ ] `:sample:assembleRelease`
 - [ ] Device or emulator smoke test, when applicable
