@@ -16,7 +16,7 @@ Read `notification-inspector` in `gradle/libs.versions.toml`. If a version argum
 
 ## 2. Verify prerequisites
 
-Confirm the working tree is clean, the current branch is `main`, local `main` matches `origin/main`, and the required Maven Central and signing credentials are available. Check only whether credentials exist; never print their values.
+Run `git fetch origin main`, then confirm the working tree is clean, the current branch is `main`, local `main` matches the refreshed `origin/main` commit ID, and the required Maven Central and signing credentials are available. Check only whether credentials exist; never print their values.
 
 Stop if any prerequisite fails.
 
