@@ -378,11 +378,13 @@ private fun NotificationDetailScreen(
 
             DetailActions(item = item, onCopy = onCopy, onShare = onShare)
 
-            when (selectedTab) {
-                NotificationDetailTab.OVERVIEW -> OverviewTab(item)
-                NotificationDetailTab.DATA -> JsonTab(item.dataJson)
-                NotificationDetailTab.NOTIFICATION -> JsonTab(item.notificationJson)
-                NotificationDetailTab.RAW_JSON -> JsonTab(item.rawJson)
+            Box(modifier = Modifier.weight(1f)) {
+                when (selectedTab) {
+                    NotificationDetailTab.OVERVIEW -> OverviewTab(item)
+                    NotificationDetailTab.DATA -> JsonTab(item.dataJson)
+                    NotificationDetailTab.NOTIFICATION -> JsonTab(item.notificationJson)
+                    NotificationDetailTab.RAW_JSON -> JsonTab(item.rawJson)
+                }
             }
         }
     }
