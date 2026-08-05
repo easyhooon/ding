@@ -276,7 +276,7 @@ private fun NotificationMessageCard(
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CategoryBadge(item.tag)
+                CategoryBadge(item.tag, item.categoryLabel)
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = item.source,
@@ -315,7 +315,10 @@ private fun NotificationMessageCard(
 }
 
 @Composable
-private fun CategoryBadge(tag: NotificationFilterTag) {
+private fun CategoryBadge(
+    tag: NotificationFilterTag,
+    label: String,
+) {
     val color = when (tag) {
         NotificationFilterTag.FCM -> Color(0xFF238636)
         NotificationFilterTag.LOCAL -> MaterialTheme.colorScheme.primary
@@ -333,7 +336,7 @@ private fun CategoryBadge(tag: NotificationFilterTag) {
         ) {
             Surface(modifier = Modifier.size(7.dp), color = color, shape = CircleShape) {}
             Spacer(Modifier.width(5.dp))
-            Text(text = tag.label, style = MaterialTheme.typography.labelSmall)
+            Text(text = label, style = MaterialTheme.typography.labelSmall)
         }
     }
 }
@@ -417,7 +420,7 @@ private fun OverviewTab(item: NotificationSnapshotUiModel) {
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
     ) {
-        CategoryBadge(item.tag)
+        CategoryBadge(item.tag, item.categoryLabel)
         Spacer(Modifier.height(16.dp))
         item.overview.forEachIndexed { index, (label, value) ->
             Column(modifier = Modifier.padding(vertical = 10.dp)) {
@@ -470,6 +473,6 @@ private fun List<NotificationSnapshotUiModel>.toJsonExport(): String {
 
 private fun List<NotificationSnapshotUiModel>.toTextExport(): String {
     return joinToString(separator = "\n\n---\n\n") { item ->
-        "${item.receivedAt} · ${item.source} · ${item.tag.label}\n${item.rawJson}"
+        "${item.receivedAt} · ${item.source} · ${item.categoryLabel}\n${item.rawJson}"
     }
 }

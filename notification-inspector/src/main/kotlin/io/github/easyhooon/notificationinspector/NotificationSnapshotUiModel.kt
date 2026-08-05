@@ -11,6 +11,7 @@ internal data class NotificationSnapshotUiModel(
     val body: String?,
     val source: String,
     val tag: NotificationFilterTag,
+    val categoryLabel: String,
     val receivedAt: String,
     val overview: List<Pair<String, String>>,
     val dataJson: String,
@@ -23,9 +24,11 @@ internal data class NotificationSnapshotUiModel(
 
     companion object {
         fun from(snapshot: JSONObject): NotificationSnapshotUiModel {
-            val tag = NotificationFilterTag.entries.firstOrNull {
+            val resolvedTag = NotificationFilterTag.entries.firstOrNull {
                 it.jsonValue == snapshot.optString("tag")
-            } ?: NotificationFilterTag.ALL
+            }
+            val tag = resolvedTag ?: NotificationFilterTag.ALL
+            val categoryLabel = resolvedTag?.label ?: OTHER_CATEGORY_LABEL
             val notification = snapshot.optJSONObject("notification")
             val receivedAtMillis = snapshot.optLong("receivedAtMillis")
             val receivedAt = receivedAtMillis
@@ -50,11 +53,12 @@ internal data class NotificationSnapshotUiModel(
                 ),
                 source = source,
                 tag = tag,
+                categoryLabel = categoryLabel,
                 receivedAt = receivedAt,
                 overview = buildList {
                     add("Type" to type)
                     add("Source" to source)
-                    add("Category" to tag.label)
+                    add("Category" to categoryLabel)
                     add("Received" to receivedAt)
                     snapshot.stringValue("messageId")?.let { add("Message ID" to it) }
                     snapshot.stringValue("notificationId")?.let { add("Notification ID" to it) }
@@ -69,6 +73,8 @@ internal data class NotificationSnapshotUiModel(
         private fun firstNonBlank(vararg values: String?): String? {
             return values.firstOrNull { !it.isNullOrBlank() }
         }
+
+        private const val OTHER_CATEGORY_LABEL = "Other"
 
         private fun formatTimestamp(timestampMillis: Long): String {
             return DateTimeFormatter
