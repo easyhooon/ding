@@ -18,7 +18,7 @@ Inspector UI:
 - compact newest-first Compose message list
 - FCM / Local source filters and payload search
 - source/category badges
-- Overview / Data / Notification / Raw JSON detail tabs
+- Overview / Raw detail tabs
 - per-message FCM registration token display, copy, and share actions
 - per-section copy, single-message share, and filtered export
 

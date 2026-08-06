@@ -395,9 +395,7 @@ private fun NotificationDetailScreen(
                         onCopy = onCopy,
                         onShareFcmToken = onShareFcmToken,
                     )
-                    NotificationDetailTab.DATA -> JsonTab(item.dataJson)
-                    NotificationDetailTab.NOTIFICATION -> JsonTab(item.notificationJson)
-                    NotificationDetailTab.RAW_JSON -> JsonTab(item.rawJson)
+                    NotificationDetailTab.RAW -> JsonTab(item.rawJson)
                 }
             }
         }
@@ -536,9 +534,7 @@ private enum class NotificationDetailTab(
     val label: String,
 ) {
     OVERVIEW("Overview"),
-    DATA("Data"),
-    NOTIFICATION("Notification"),
-    RAW_JSON("Raw JSON"),
+    RAW("Raw"),
 }
 
 private fun List<NotificationSnapshotUiModel>.toJsonExport(): String {
