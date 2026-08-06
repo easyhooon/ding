@@ -13,6 +13,7 @@ This file records recurring CodeRabbit findings and their outcomes. When the sam
 | Display unknown categories separately from the all-items filter | 1 | #1 | 2026-08-05 |
 | Serialize persistent notification state transitions | 1 | #1 | 2026-08-05 |
 | Use the current no-argument Maven Central publishing API | 1 | #1 | 2026-08-05 |
+| Serialize token updates with dependent snapshot capture | 1 | #3 | 2026-08-06 |
 
 ## Declined patterns
 

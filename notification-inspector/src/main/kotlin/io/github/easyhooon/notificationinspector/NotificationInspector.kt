@@ -39,11 +39,12 @@ object NotificationInspector {
         val receivedAtMillis = System.currentTimeMillis()
         suppliedFcmToken?.let(store::updateFcmTokenAsync)
 
-        store.appendAsync(
-            snapshotProvider = {
+        store.appendWithFcmTokenAsync(
+            suppliedFcmToken = suppliedFcmToken,
+            snapshotProvider = { fcmToken ->
                 RemoteMessageSnapshot.from(
                     remoteMessage = remoteMessage,
-                    fcmToken = suppliedFcmToken ?: store.readFcmToken(),
+                    fcmToken = fcmToken,
                     receivedAtMillis = receivedAtMillis,
                 ).also { snapshot ->
                     Log.d(TAG, snapshot.toString(2))
