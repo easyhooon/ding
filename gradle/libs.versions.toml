@@ -11,7 +11,7 @@ kotlinx-coroutines = "1.10.2"
 kotlin-detekt = "1.23.8"
 kotlin-ktlint-gradle = "11.6.1"
 kotlin-ktlint-source = "0.50.0"
-vanniktech-maven-publish = "0.31.0"
+vanniktech-maven-publish = "0.37.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
