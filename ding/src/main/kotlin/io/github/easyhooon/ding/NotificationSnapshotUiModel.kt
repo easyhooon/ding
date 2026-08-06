@@ -30,6 +30,7 @@ internal data class NotificationSnapshotUiModel(
             }
             val tag = resolvedTag ?: NotificationFilterTag.ALL
             val categoryLabel = resolvedTag?.label ?: OTHER_CATEGORY_LABEL
+            val data = snapshot.optJSONObject("data")
             val notification = snapshot.optJSONObject("notification")
             val receivedAtMillis = snapshot.optLong("receivedAtMillis")
             val receivedAt = receivedAtMillis
@@ -44,6 +45,7 @@ internal data class NotificationSnapshotUiModel(
                 title = firstNonBlank(
                     snapshot.stringValue("title"),
                     notification?.stringValue("title"),
+                    data?.stringValue("title"),
                 ) ?: when (tag) {
                     NotificationFilterTag.FCM -> "Remote message"
                     NotificationFilterTag.LOCAL -> "Local notification"
@@ -52,6 +54,7 @@ internal data class NotificationSnapshotUiModel(
                 body = firstNonBlank(
                     snapshot.stringValue("body"),
                     notification?.stringValue("body"),
+                    data?.stringValue("body"),
                 ),
                 source = source,
                 tag = tag,
