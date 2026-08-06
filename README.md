@@ -103,13 +103,13 @@ See [docs/WORK_STRATEGY.md](docs/WORK_STRATEGY.md).
 Run the `sample` module and tap:
 
 - `Send Local Notification`
-- `Capture Mock FCM Message`
+- `Add Demo FCM Notifications`
 - `Rotate Sample FCM Token`
 - `Enable Ding notification`
 - `Disable Ding notification`
 - `Open Ding`
 
-The captured local notification appears under the `Local` filter, and the mock remote message appears under `FCM`.
+The captured local notification appears under the `Local` filter. The demo FCM action adds realistic delivery, message, reservation, payment, and activity notifications under `FCM`.
 
 ## Privacy
 
