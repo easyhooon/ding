@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.easyhooon.notificationinspector.sample"
+    namespace = "io.github.easyhooon.ding.sample"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "io.github.easyhooon.notificationinspector.sample"
+        applicationId = "io.github.easyhooon.ding.sample"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
@@ -21,6 +21,6 @@ android {
 }
 
 dependencies {
-    debugImplementation(project(":notification-inspector"))
-    releaseImplementation(project(":notification-inspector-noop"))
+    debugImplementation(project(":ding"))
+    releaseImplementation(project(":ding-noop"))
 }

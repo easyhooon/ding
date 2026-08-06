@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NotificationInspector"
-include(":notification-inspector")
-include(":notification-inspector-noop")
+rootProject.name = "Ding"
+include(":ding")
+include(":ding-noop")
 include(":sample")

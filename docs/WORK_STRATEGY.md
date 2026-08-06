@@ -1,8 +1,8 @@
-# Notification Inspector Work Strategy
+# Ding Work Strategy
 
 ## Goal
 
-Build `easyhooon/notification-inspector` as a reusable Android debug library for inspecting notification-related payloads in real apps.
+Build Ding in `easyhooon/notification-inspector` as a reusable Android debug library for inspecting notification-related payloads in real apps.
 
 The library starts from the Hime-incubated implementation, then grows toward a Dari-like developer experience without coupling itself to Hime.
 
@@ -12,7 +12,7 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 - Phase 2 complete: Compose list, search, source filters, category affordances, and detail tabs.
 - Phase 3 complete: default persistent notification with payload-safe summaries and automatic entry-point setup.
 - Phase 4 complete: section copy, single-message sharing, filtered export, and privacy guidance.
-- Publication ready: both library artifacts share version `0.1.0` and publish through the Maven Central workflow.
+- Ding `0.2.0` rebrands the package, API, modules, and Maven coordinates before external adoption.
 
 ## Scope
 
@@ -20,12 +20,12 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 
 - Create an independent Gradle Android library repository.
 - Preserve the debug/no-op split:
-  - `notification-inspector`: debug implementation.
-  - `notification-inspector-noop`: release/staging no-op API surface.
+  - `ding`: debug implementation.
+  - `ding-noop`: release/staging no-op API surface.
 - Move the current Hime-incubated API:
-  - `NotificationInspector.capture(context, remoteMessage)`
-  - `NotificationInspector.captureNotification(...)`
-  - `NotificationInspector.open(context)`
+  - `Ding.capture(context, remoteMessage)`
+  - `Ding.captureNotification(...)`
+  - `Ding.open(context)`
 - Keep DataStore Preferences as the local storage backend.
 - Keep `org.json` for snapshot storage while the schema is still moving.
 - Add a minimal sample app that can exercise:
@@ -52,11 +52,9 @@ The library starts from the Hime-incubated implementation, then grows toward a D
   - raw JSON text
 - Add detail tabs:
   - Overview
-  - Data
-  - Notification
   - Raw JSON
 
-### Phase 3: Inspector Entry Points
+### Phase 3: Ding Entry Points
 
 - Register a dynamic shortcut on the host app icon at application startup.
 - Keep the inspector Activity out of the standalone launcher list.
@@ -69,8 +67,6 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 
 - Improve single-message copy:
   - copy raw JSON
-  - copy data payload
-  - copy notification payload
 - Add share/export:
   - selected message as text
   - all filtered messages as JSON/text
@@ -86,10 +82,10 @@ Reason:
 
 - Dari already uses shake-to-open in apps that include it.
 - If both libraries are installed, duplicate shake handlers can feel broken or noisy.
-- Notification Inspector should first support explicit entry points:
-  - launcher Activity
+- Ding should first support explicit entry points:
+  - host app shortcut
   - persistent notification
-  - `NotificationInspector.open(context)`
+  - `Ding.open(context)`
 
 When implemented later, shake-to-open must be:
 
@@ -115,8 +111,8 @@ When implemented later, shake-to-open must be:
 notification-inspector/
 ├── docs/
 │   └── WORK_STRATEGY.md
-├── notification-inspector/
-├── notification-inspector-noop/
+├── ding/
+├── ding-noop/
 ├── sample/
 ├── gradle/
 ├── build.gradle.kts
@@ -127,9 +123,9 @@ notification-inspector/
 ## Definition Of Done For First Extracted Version
 
 - Independent repo opens in Android Studio.
-- `:notification-inspector:ktlintCheck` passes.
-- `:notification-inspector-noop:ktlintCheck` passes.
-- `:notification-inspector:detekt` passes if detekt is configured.
+- `:ding:ktlintCheck` passes.
+- `:ding-noop:ktlintCheck` passes.
+- `:ding:detekt` passes if detekt is configured.
 - Sample app can trigger local notification capture.
 - README shows debug/no-op installation and basic API usage.
 - Hime can later replace project modules with Maven coordinates without API changes.

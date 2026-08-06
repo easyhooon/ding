@@ -5,7 +5,7 @@
 
     <application
         android:label="@string/app_name"
-        android:theme="@style/Theme.NotificationInspectorSample">
+        android:theme="@style/Theme.DingSample">
         <activity
             android:name=".MainActivity"
             android:exported="true">
