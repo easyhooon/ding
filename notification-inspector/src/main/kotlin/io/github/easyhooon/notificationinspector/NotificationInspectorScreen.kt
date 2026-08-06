@@ -366,7 +366,12 @@ private fun NotificationDetailScreen(
                     Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 },
                 navigationIcon = {
-                    TextButton(onClick = onBack) { Text("Back") }
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = "Back",
+                        )
+                    }
                 },
             )
         },
