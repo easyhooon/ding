@@ -12,6 +12,7 @@ internal data class NotificationSnapshotUiModel(
     val source: String,
     val tag: NotificationFilterTag,
     val categoryLabel: String,
+    val fcmToken: String?,
     val receivedAt: String,
     val overview: List<Pair<String, String>>,
     val dataJson: String,
@@ -37,6 +38,7 @@ internal data class NotificationSnapshotUiModel(
                 ?: "Unknown time"
             val type = snapshot.stringValue("type") ?: "unknown"
             val source = snapshot.stringValue("source") ?: "unknown"
+            val fcmToken = snapshot.stringValue("fcmToken")
 
             return NotificationSnapshotUiModel(
                 title = firstNonBlank(
@@ -54,6 +56,7 @@ internal data class NotificationSnapshotUiModel(
                 source = source,
                 tag = tag,
                 categoryLabel = categoryLabel,
+                fcmToken = fcmToken,
                 receivedAt = receivedAt,
                 overview = buildList {
                     add("Type" to type)

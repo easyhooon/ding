@@ -6,6 +6,7 @@ import org.json.JSONObject
 internal object RemoteMessageSnapshot {
     fun from(
         remoteMessage: RemoteMessage,
+        fcmToken: String?,
         receivedAtMillis: Long,
     ): JSONObject {
         return JSONObject().apply {
@@ -13,6 +14,7 @@ internal object RemoteMessageSnapshot {
             put("source", "fcm")
             put("tag", NotificationFilterTag.FCM.jsonValue)
             put("receivedAtMillis", receivedAtMillis)
+            putNullable("fcmToken", fcmToken)
             putNullable("messageId", remoteMessage.messageId)
             putNullable("messageType", remoteMessage.messageType)
             putNullable("from", remoteMessage.from)

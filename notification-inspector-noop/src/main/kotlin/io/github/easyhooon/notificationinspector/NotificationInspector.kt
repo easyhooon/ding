@@ -8,6 +8,14 @@ import com.google.firebase.messaging.RemoteMessage
 object NotificationInspector {
     fun capture(context: Context, remoteMessage: RemoteMessage) = Unit
 
+    fun capture(
+        context: Context,
+        remoteMessage: RemoteMessage,
+        fcmToken: String,
+    ) = Unit
+
+    fun updateFcmToken(context: Context, fcmToken: String) = Unit
+
     fun captureNotification(
         context: Context,
         source: String,

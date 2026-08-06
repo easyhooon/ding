@@ -15,13 +15,17 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.messaging.RemoteMessage
 import io.github.easyhooon.notificationinspector.NotificationInspector
 
 class MainActivity : Activity() {
+    private var sampleFcmTokenVersion = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationPermissionIfNeeded()
+        updateSampleFcmToken()
         setContentView(createContentView())
     }
 
@@ -49,6 +53,7 @@ class MainActivity : Activity() {
 
             addView(actionButton("Send Local Notification") { sendLocalNotification() })
             addView(actionButton("Capture Mock FCM Message") { captureMockRemoteMessage() })
+            addView(actionButton("Rotate Sample FCM Token") { rotateSampleFcmToken() })
             addView(
                 actionButton("Enable Persistent Inspector") {
                     NotificationInspector.setPersistentNotificationEnabled(this@MainActivity, true)
@@ -123,6 +128,19 @@ class MainActivity : Activity() {
         NotificationInspector.capture(this, remoteMessage)
     }
 
+    private fun rotateSampleFcmToken() {
+        sampleFcmTokenVersion++
+        updateSampleFcmToken()
+        Toast.makeText(this, "Sample FCM token rotated", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateSampleFcmToken() {
+        NotificationInspector.updateFcmToken(
+            context = this,
+            fcmToken = "$SAMPLE_FCM_TOKEN_PREFIX-v$sampleFcmTokenVersion",
+        )
+    }
+
     private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return
@@ -142,5 +160,7 @@ class MainActivity : Activity() {
         private const val CHANNEL_ID = "sample"
         private const val CHANNEL_NAME = "Sample Notifications"
         private const val REQUEST_NOTIFICATIONS = 100
+        private const val SAMPLE_FCM_TOKEN_PREFIX =
+            "sample-fcm-registration-token:APA91bG_notification_inspector_debug_only"
     }
 }
