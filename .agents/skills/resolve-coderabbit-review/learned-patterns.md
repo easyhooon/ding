@@ -22,3 +22,4 @@ This file records recurring CodeRabbit findings and their outcomes. When the sam
 | Pattern | Count | Pull requests | Most recent |
 | --- | ---: | --- | --- |
 | Preserve an explicitly requested upstream-exact AGENTS.md copy | 1 | #1 | 2026-08-05 |
+| Replace intentional data-only FCM demos with synthetic notification payloads | 1 | #10 | 2026-08-06 |

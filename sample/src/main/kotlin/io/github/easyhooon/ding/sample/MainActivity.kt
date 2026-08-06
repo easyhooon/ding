@@ -58,7 +58,7 @@ class MainActivity : Activity() {
             )
 
             addView(actionButton("Send Local Notification") { sendLocalNotification() })
-            addView(actionButton("Capture Mock FCM Message") { captureMockRemoteMessage() })
+            addView(actionButton("Add Demo FCM Notifications") { addDemoFcmNotifications() })
             addView(actionButton("Rotate Sample FCM Token") { rotateSampleFcmToken() })
             addView(
                 actionButton("Enable Ding notification") {
@@ -122,18 +122,25 @@ class MainActivity : Activity() {
         )
     }
 
-    private fun captureMockRemoteMessage() {
-        val messageId = "sample-${System.currentTimeMillis()}"
-        val remoteMessage = RemoteMessage.Builder("ding-sample@fcm.googleapis.com")
-            .setMessageId(messageId)
-            .setMessageType("sample")
-            .addData("title", "Ding sample notification")
-            .addData("body", "This mock FCM message is ready to inspect.")
-            .addData("event", "manual-fcm-capture")
-            .addData("message-id", messageId)
-            .build()
+    private fun addDemoFcmNotifications() {
+        val batchId = System.currentTimeMillis()
+        DEMO_FCM_MESSAGES.forEachIndexed { index, message ->
+            val messageId = "demo-${batchId + index}"
+            val remoteMessage = RemoteMessage.Builder("app-instance@fcm.googleapis.com")
+                .setMessageId(messageId)
+                .addData("title", message.title)
+                .addData("body", message.body)
+                .addData("category", message.category)
+                .addData("event", message.event)
+                .addData("message-id", messageId)
+                .apply {
+                    message.metadata.forEach { (key, value) -> addData(key, value) }
+                }
+                .build()
 
-        Ding.capture(this, remoteMessage)
+            Ding.capture(this, remoteMessage)
+        }
+        Toast.makeText(this, "Demo FCM notifications added", Toast.LENGTH_SHORT).show()
     }
 
     private fun rotateSampleFcmToken() {
@@ -171,5 +178,50 @@ class MainActivity : Activity() {
         private const val SAMPLE_FCM_TOKEN_VERSION_KEY = "sample_fcm_token_version"
         private const val SAMPLE_FCM_TOKEN_PREFIX =
             "sample-fcm-registration-token:APA91bG_ding_debug_only"
+        private val DEMO_FCM_MESSAGES = listOf(
+            DemoFcmMessage(
+                title = "Weekly activity summary",
+                body = "You completed 12 tasks and stayed focused for 6h 20m.",
+                category = "insights",
+                event = "weekly_summary_ready",
+                metadata = mapOf("week" to "2026-W32"),
+            ),
+            DemoFcmMessage(
+                title = "Payment completed",
+                body = "Your payment of \$24.90 was processed successfully.",
+                category = "billing",
+                event = "payment_completed",
+                metadata = mapOf("order-id" to "D-2048"),
+            ),
+            DemoFcmMessage(
+                title = "Reservation confirmed",
+                body = "Your table for two is booked for Friday at 7:30 PM.",
+                category = "reservations",
+                event = "reservation_confirmed",
+                metadata = mapOf("reservation-id" to "RSV-7319"),
+            ),
+            DemoFcmMessage(
+                title = "New message from Mina",
+                body = "Are we still on for dinner at 7?",
+                category = "messages",
+                event = "message_received",
+                metadata = mapOf("conversation-id" to "C-1842"),
+            ),
+            DemoFcmMessage(
+                title = "Order shipped",
+                body = "Order #D-2048 is on the way and will arrive tomorrow.",
+                category = "delivery",
+                event = "order_shipped",
+                metadata = mapOf("tracking-id" to "TRK-583104"),
+            ),
+        )
     }
 }
+
+private data class DemoFcmMessage(
+    val title: String,
+    val body: String,
+    val category: String,
+    val event: String,
+    val metadata: Map<String, String>,
+)
