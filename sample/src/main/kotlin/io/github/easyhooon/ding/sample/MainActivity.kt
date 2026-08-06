@@ -128,7 +128,6 @@ class MainActivity : Activity() {
             val messageId = "demo-${batchId + index}"
             val remoteMessage = RemoteMessage.Builder("app-instance@fcm.googleapis.com")
                 .setMessageId(messageId)
-                .setMessageType("notification")
                 .addData("title", message.title)
                 .addData("body", message.body)
                 .addData("category", message.category)
