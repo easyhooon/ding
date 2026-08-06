@@ -10,7 +10,7 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 
 - Phase 1 complete: independent debug/no-op modules and sample capture paths.
 - Phase 2 complete: Compose list, search, source filters, category affordances, and detail tabs.
-- Phase 3 complete: opt-in persistent notification with payload-safe summaries.
+- Phase 3 complete: default persistent notification with payload-safe summaries and automatic entry-point setup.
 - Phase 4 complete: section copy, single-message sharing, filtered export, and privacy guidance.
 - Publication ready: both library artifacts share version `0.1.0` and publish through the Maven Central workflow.
 
@@ -56,12 +56,14 @@ The library starts from the Hime-incubated implementation, then grows toward a D
   - Notification
   - Raw JSON
 
-### Phase 3: Persistent Notification
+### Phase 3: Inspector Entry Points
 
-- Add an optional persistent debug notification.
+- Register a dynamic shortcut on the host app icon at application startup.
+- Keep the inspector Activity out of the standalone launcher list.
+- Add a persistent debug notification enabled by default.
 - Tapping the notification opens the inspector UI.
 - Notification content should summarize recent captured events without leaking too much payload text.
-- Keep this feature opt-in or debug-default configurable.
+- Persist an explicit runtime opt-out across process restarts.
 
 ### Phase 4: Export / Copy UX
 

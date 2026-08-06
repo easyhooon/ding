@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="io.github.easyhooon.notificationinspector.NotificationInspectorInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
         <activity
             android:name=".NotificationInspectorActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/notification_inspector_name"
-            android:theme="@style/Theme.NotificationInspector">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.NotificationInspector" />
     </application>
 
 </manifest>

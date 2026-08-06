@@ -41,7 +41,7 @@ class MainActivity : Activity() {
 
             addView(
                 TextView(this@MainActivity).apply {
-                    text = "Create a local notification, then open the inspector to view its captured payload."
+                    text = "Long-press the app icon or tap the Inspector notification to open captured payloads."
                     textSize = 14f
                     setPadding(0, dp(8), 0, dp(16))
                 },
