@@ -6,9 +6,36 @@ Android notification payload inspector for debug builds.
 
 Ding captures notification-related payload snapshots from real apps and provides a debug UI for inspecting them.
 
+See notification history at a glance, then drill into capture metadata and raw payloads when something looks wrong.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><b>Message List</b></td>
+    <td align="center"><b>Filtered Actions</b></td>
+    <td align="center"><b>Settings</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/ding-list.png" width="270" /></td>
+    <td><img src="screenshots/ding-list-actions.png" width="270" /></td>
+    <td><img src="screenshots/ding-settings.png" width="270" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Overview</b></td>
+    <td align="center"><b>Raw JSON</b></td>
+    <td align="center"><b>Dark Mode</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/ding-overview-clean.png" width="270" /></td>
+    <td><img src="screenshots/ding-raw.png" width="270" /></td>
+    <td><img src="screenshots/ding-dark.png" width="270" /></td>
+  </tr>
+</table>
+
 ## Current Status
 
-The debug and no-op artifacts share version `0.2.0`.
+The debug and no-op artifacts share version `0.3.0`.
 
 Initial supported capture paths:
 
@@ -24,14 +51,16 @@ Ding UI:
 - source/category badges
 - Overview / Raw detail tabs
 - per-message FCM registration token display, copy, and share actions
-- per-section copy, single-message share, and filtered export
+- top-bar copy and share menus for individual messages and filtered results
+- settings sheet with persistent System / Light / Dark theme selection
+- reload, clear-all, library version, and GitHub actions in settings
 
 ## Gradle
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.easyhooon:ding:0.2.0")
-    releaseImplementation("io.github.easyhooon:ding-noop:0.2.0")
+    debugImplementation("io.github.easyhooon:ding:0.3.0")
+    releaseImplementation("io.github.easyhooon:ding-noop:0.3.0")
 }
 ```
 

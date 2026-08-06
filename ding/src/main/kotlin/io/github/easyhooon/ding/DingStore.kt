@@ -111,6 +111,24 @@ internal class DingStore(context: Context) {
         }
     }
 
+    suspend fun readDarkMode(): Boolean? {
+        return mutex.withLock {
+            readPreferences()[KEY_DARK_MODE]
+        }
+    }
+
+    suspend fun setDarkMode(value: Boolean?) {
+        mutex.withLock {
+            dataStore.edit { preferences ->
+                if (value == null) {
+                    preferences.remove(KEY_DARK_MODE)
+                } else {
+                    preferences[KEY_DARK_MODE] = value
+                }
+            }
+        }
+    }
+
     suspend fun readFcmToken(): String? {
         cachedFcmToken()?.let { return it }
         return mutex.withLock {
@@ -191,11 +209,13 @@ internal class DingStore(context: Context) {
         private const val KEY_MESSAGES_NAME = "messages"
         private const val KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME = "persistent_notification_enabled"
         private const val KEY_FCM_TOKEN_NAME = "fcm_token"
+        private const val KEY_DARK_MODE_NAME = "dark_mode"
         private const val MAX_MESSAGES = 50
         private val KEY_MESSAGES = stringPreferencesKey(KEY_MESSAGES_NAME)
         private val KEY_PERSISTENT_NOTIFICATION_ENABLED =
             booleanPreferencesKey(KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME)
         private val KEY_FCM_TOKEN = stringPreferencesKey(KEY_FCM_TOKEN_NAME)
+        private val KEY_DARK_MODE = booleanPreferencesKey(KEY_DARK_MODE_NAME)
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         private val mutex = Mutex()
         private val fcmTokenOperations =
