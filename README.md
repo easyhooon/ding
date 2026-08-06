@@ -6,12 +6,20 @@ Notification Inspector captures notification-related payload snapshots from real
 
 ## Current Status
 
-This repository is being extracted from the Hime-incubated implementation.
+The first extracted version is feature-complete and publication-ready. The debug and no-op artifacts share version `0.1.0`.
 
 Initial supported capture paths:
 
 - Firebase `RemoteMessage`
 - app-created local notifications
+
+Inspector UI:
+
+- compact newest-first Compose message list
+- FCM / Local source filters and payload search
+- source/category badges
+- Overview / Data / Notification / Raw JSON detail tabs
+- per-section copy, single-message share, and filtered export
 
 ## Gradle
 
@@ -43,6 +51,14 @@ NotificationInspector.captureNotification(
 )
 ```
 
+The persistent inspector notification is opt-in. It only shows the captured count and latest category, and tapping it opens the inspector.
+
+```kotlin
+NotificationInspector.setPersistentNotificationEnabled(context, enabled = true)
+```
+
+Call the same API with `enabled = false` to remove it. On Android 13 and newer, the host app remains responsible for requesting `POST_NOTIFICATIONS` at an appropriate time.
+
 ## Strategy
 
 See [docs/WORK_STRATEGY.md](docs/WORK_STRATEGY.md).
@@ -52,6 +68,13 @@ See [docs/WORK_STRATEGY.md](docs/WORK_STRATEGY.md).
 Run the `sample` module and tap:
 
 - `Send Local Notification`
+- `Capture Mock FCM Message`
+- `Enable Persistent Inspector`
+- `Disable Persistent Inspector`
 - `Open Inspector`
 
-The captured local notification should appear under the `Local` filter.
+The captured local notification appears under the `Local` filter, and the mock remote message appears under `FCM`.
+
+## Privacy
+
+Notification payloads can contain personal data, authentication material, or internal identifiers. Keep the inspector on debug builds, review exported content before sharing it, and never attach raw production payloads to public issues.

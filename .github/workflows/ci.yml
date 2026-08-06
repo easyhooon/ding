@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Verify libraries and sample
+        run: >-
+          ./gradlew
+          :notification-inspector:ktlintCheck
+          :notification-inspector-noop:ktlintCheck
+          :notification-inspector:detekt
+          :notification-inspector-noop:detekt
+          :notification-inspector:lintRelease
+          :notification-inspector-noop:lintRelease
+          :sample:assembleDebug
+          :sample:assembleRelease

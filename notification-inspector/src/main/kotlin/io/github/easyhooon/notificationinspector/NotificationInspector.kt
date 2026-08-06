@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.google.firebase.messaging.RemoteMessage
+import org.json.JSONObject
 
 object NotificationInspector {
     private const val TAG = "NotificationInspector"
@@ -13,7 +14,7 @@ object NotificationInspector {
             remoteMessage = remoteMessage,
             receivedAtMillis = System.currentTimeMillis(),
         )
-        NotificationInspectorStore(context).appendAsync(snapshot)
+        store(context, snapshot)
         Log.d(TAG, snapshot.toString(2))
     }
 
@@ -33,13 +34,25 @@ object NotificationInspector {
             data = data,
             receivedAtMillis = System.currentTimeMillis(),
         )
-        NotificationInspectorStore(context).appendAsync(snapshot)
+        store(context, snapshot)
         Log.d(TAG, snapshot.toString(2))
+    }
+
+    fun setPersistentNotificationEnabled(context: Context, enabled: Boolean) {
+        PersistentNotificationController.setEnabled(context, enabled)
     }
 
     fun open(context: Context) {
         val intent = Intent(context, NotificationInspectorActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    private fun store(context: Context, snapshot: JSONObject) {
+        val appContext = context.applicationContext
+        val store = NotificationInspectorStore(appContext)
+        store.appendAsync(snapshot) {
+            PersistentNotificationController.refreshIfEnabled(appContext, store)
+        }
     }
 }

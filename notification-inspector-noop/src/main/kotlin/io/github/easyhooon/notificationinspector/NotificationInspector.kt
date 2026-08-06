@@ -17,5 +17,7 @@ object NotificationInspector {
         data: Map<String, String> = emptyMap(),
     ) = Unit
 
+    fun setPersistentNotificationEnabled(context: Context, enabled: Boolean) = Unit
+
     fun open(context: Context) = Unit
 }

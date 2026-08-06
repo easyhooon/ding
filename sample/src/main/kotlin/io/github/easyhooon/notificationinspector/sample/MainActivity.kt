@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.google.firebase.messaging.RemoteMessage
 import io.github.easyhooon.notificationinspector.NotificationInspector
 
 class MainActivity : Activity() {
@@ -47,6 +48,17 @@ class MainActivity : Activity() {
             )
 
             addView(actionButton("Send Local Notification") { sendLocalNotification() })
+            addView(actionButton("Capture Mock FCM Message") { captureMockRemoteMessage() })
+            addView(
+                actionButton("Enable Persistent Inspector") {
+                    NotificationInspector.setPersistentNotificationEnabled(this@MainActivity, true)
+                },
+            )
+            addView(
+                actionButton("Disable Persistent Inspector") {
+                    NotificationInspector.setPersistentNotificationEnabled(this@MainActivity, false)
+                },
+            )
             addView(actionButton("Open Inspector") { NotificationInspector.open(this@MainActivity) })
         }
     }
@@ -97,6 +109,18 @@ class MainActivity : Activity() {
             body = body,
             data = mapOf("thread-id" to "sample-thread"),
         )
+    }
+
+    private fun captureMockRemoteMessage() {
+        val messageId = "sample-${System.currentTimeMillis()}"
+        val remoteMessage = RemoteMessage.Builder("notification-inspector-sample@fcm.googleapis.com")
+            .setMessageId(messageId)
+            .setMessageType("sample")
+            .addData("event", "manual-fcm-capture")
+            .addData("message-id", messageId)
+            .build()
+
+        NotificationInspector.capture(this, remoteMessage)
     }
 
     private fun requestNotificationPermissionIfNeeded() {
