@@ -91,6 +91,20 @@ internal class NotificationInspectorStore(context: Context) {
         }
     }
 
+    suspend fun initializePersistentNotificationEnabled(defaultEnabled: Boolean): Boolean {
+        return mutex.withLock {
+            val existing = readPreferences()[KEY_PERSISTENT_NOTIFICATION_ENABLED]
+            if (existing != null) {
+                existing
+            } else {
+                dataStore.edit { preferences ->
+                    preferences[KEY_PERSISTENT_NOTIFICATION_ENABLED] = defaultEnabled
+                }
+                defaultEnabled
+            }
+        }
+    }
+
     suspend fun isPersistentNotificationEnabled(): Boolean {
         return mutex.withLock {
             readPreferences()[KEY_PERSISTENT_NOTIFICATION_ENABLED] ?: false

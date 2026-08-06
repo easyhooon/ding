@@ -15,6 +15,8 @@ Initial supported capture paths:
 
 Inspector UI:
 
+- dynamic `Inspector` shortcut on the host app icon
+- persistent debug notification that opens the inspector when tapped
 - compact newest-first Compose message list
 - FCM / Local source filters and payload search
 - source/category badges
@@ -82,13 +84,15 @@ NotificationInspector.captureNotification(
 )
 ```
 
-The persistent inspector notification is opt-in. It only shows the captured count and latest category, and tapping it opens the inspector.
+The debug implementation initializes automatically when the host app starts. Long-press the host app icon and select `Inspector`, or tap the persistent Inspector notification, to open the captured payload list. The library no longer adds a separate launcher icon.
+
+The persistent notification is enabled by default. It only shows the captured count and latest category. Disable it when the notification entry point is not wanted:
 
 ```kotlin
-NotificationInspector.setPersistentNotificationEnabled(context, enabled = true)
+NotificationInspector.setPersistentNotificationEnabled(context, enabled = false)
 ```
 
-Call the same API with `enabled = false` to remove it. On Android 13 and newer, the host app remains responsible for requesting `POST_NOTIFICATIONS` at an appropriate time.
+Call the same API with `enabled = true` to restore it. The explicit choice persists across process restarts. On Android 13 and newer, the host app remains responsible for requesting `POST_NOTIFICATIONS` at an appropriate time.
 
 ## Strategy
 

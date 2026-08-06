@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="notification_inspector_name">Notification Inspector</string>
+    <string name="notification_inspector_shortcut_label">Inspector</string>
+    <string name="notification_inspector_shortcut_long_label">Open Notification Inspector</string>
     <string name="notification_inspector_channel_name">Notification Inspector</string>
     <string name="notification_inspector_channel_description">Persistent access to captured debug notification payloads</string>
     <string name="notification_inspector_persistent_title">Notification Inspector</string>

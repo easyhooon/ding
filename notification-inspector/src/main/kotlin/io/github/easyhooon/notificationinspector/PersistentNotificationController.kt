@@ -26,6 +26,18 @@ internal object PersistentNotificationController {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val stateMutex = Mutex()
 
+    fun initialize(context: Context) {
+        val appContext = context.applicationContext
+        val store = NotificationInspectorStore(appContext)
+        scope.launch {
+            stateMutex.withLock {
+                if (store.initializePersistentNotificationEnabled(defaultEnabled = true)) {
+                    show(appContext, store.readAll())
+                }
+            }
+        }
+    }
+
     fun setEnabled(context: Context, enabled: Boolean) {
         val appContext = context.applicationContext
         val store = NotificationInspectorStore(appContext)
