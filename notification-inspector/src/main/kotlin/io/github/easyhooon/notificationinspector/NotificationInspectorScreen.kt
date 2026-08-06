@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -173,6 +175,8 @@ private fun NotificationListScreen(
     onReload: () -> Unit,
     onClear: () -> Unit,
 ) {
+    var showClearConfirmation by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -188,7 +192,12 @@ private fun NotificationListScreen(
                 },
                 actions = {
                     TextButton(onClick = onReload) { Text("Reload") }
-                    TextButton(onClick = onClear, enabled = totalCount > 0) { Text("Clear") }
+                    TextButton(
+                        onClick = { showClearConfirmation = true },
+                        enabled = totalCount > 0,
+                    ) {
+                        Text("Clear")
+                    }
                 },
             )
         },
@@ -256,6 +265,31 @@ private fun NotificationListScreen(
                 }
             }
         }
+    }
+
+    if (showClearConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearConfirmation = false },
+            title = { Text("Clear all notifications?") },
+            text = {
+                Text("All captured notification history will be permanently deleted. This can't be undone.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showClearConfirmation = false
+                        onClear()
+                    },
+                ) {
+                    Text("Clear all", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearConfirmation = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
 }
 
@@ -420,8 +454,6 @@ private fun DetailActions(
             .padding(horizontal = 8.dp),
     ) {
         TextButton(onClick = { onCopy(item.rawJson) }) { Text("Copy raw JSON") }
-        TextButton(onClick = { onCopy(item.dataJson) }) { Text("Copy data") }
-        TextButton(onClick = { onCopy(item.notificationJson) }) { Text("Copy notification") }
         TextButton(onClick = onShare) { Text("Share message") }
     }
 }
