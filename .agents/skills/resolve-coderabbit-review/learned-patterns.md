@@ -16,6 +16,7 @@ This file records recurring CodeRabbit findings and their outcomes. When the sam
 | Serialize token updates with dependent snapshot capture | 1 | #3 | 2026-08-06 |
 | Restore sample demo state before publishing it to the inspector | 1 | #3 | 2026-08-06 |
 | Remove legacy product wording during complete rebrands | 1 | #7 | 2026-08-06 |
+| Add descriptive alt text to README screenshots | 1 | #13 | 2026-08-06 |
 
 ## Declined patterns
 

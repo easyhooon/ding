@@ -2,7 +2,6 @@ package io.github.easyhooon.ding
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,8 +40,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,15 +66,22 @@ internal fun DingApp(
     onShare: (String, String) -> Unit,
     onCleared: () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
-            darkColorScheme(primary = Color(0xFF83D5DE))
-        } else {
-            lightColorScheme(primary = Color(0xFF006D77))
-        },
-    ) {
+    var darkMode by remember { mutableStateOf<Boolean?>(null) }
+    var isThemeLoaded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(store) {
+        darkMode = store.readDarkMode()
+        isThemeLoaded = true
+    }
+    LaunchedEffect(darkMode, isThemeLoaded) {
+        if (isThemeLoaded) store.setDarkMode(darkMode)
+    }
+
+    DingTheme(darkMode = darkMode) {
         DingRoute(
             store = store,
+            darkMode = darkMode,
+            onDarkModeChange = { darkMode = it },
             onCopy = onCopy,
             onShare = onShare,
             onCleared = onCleared,
@@ -88,6 +92,8 @@ internal fun DingApp(
 @Composable
 private fun DingRoute(
     store: DingStore,
+    darkMode: Boolean?,
+    onDarkModeChange: (Boolean?) -> Unit,
     onCopy: (String) -> Unit,
     onShare: (String, String) -> Unit,
     onCleared: () -> Unit,
@@ -143,6 +149,7 @@ private fun DingRoute(
         selectedFilter = selectedFilter,
         query = query,
         isLoading = isLoading,
+        darkMode = darkMode,
         onFilterSelected = { selectedFilter = it },
         onQueryChanged = { query = it },
         onItemSelected = { selectedItem = it },
@@ -150,6 +157,7 @@ private fun DingRoute(
         onShareFiltered = {
             onShare("Ding export", filteredItems.toTextExport())
         },
+        onDarkModeChange = onDarkModeChange,
         onReload = ::reload,
         onClear = {
             scope.launch {
@@ -169,15 +177,18 @@ private fun NotificationListScreen(
     selectedFilter: NotificationFilterTag,
     query: String,
     isLoading: Boolean,
+    darkMode: Boolean?,
     onFilterSelected: (NotificationFilterTag) -> Unit,
     onQueryChanged: (String) -> Unit,
     onItemSelected: (NotificationSnapshotUiModel) -> Unit,
     onCopyFiltered: () -> Unit,
     onShareFiltered: () -> Unit,
+    onDarkModeChange: (Boolean?) -> Unit,
     onReload: () -> Unit,
     onClear: () -> Unit,
 ) {
     var showClearConfirmation by rememberSaveable { mutableStateOf(false) }
+    var showSettingsSheet by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -201,12 +212,11 @@ private fun NotificationListScreen(
                         onCopy = onCopyFiltered,
                         onShare = onShareFiltered,
                     )
-                    TextButton(onClick = onReload) { Text("Reload") }
-                    TextButton(
-                        onClick = { showClearConfirmation = true },
-                        enabled = totalCount > 0,
-                    ) {
-                        Text("Clear")
+                    IconButton(onClick = { showSettingsSheet = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = "Settings",
+                        )
                     }
                 },
             )
@@ -261,6 +271,23 @@ private fun NotificationListScreen(
                 }
             }
         }
+    }
+
+    if (showSettingsSheet) {
+        DingSettingsSheet(
+            darkMode = darkMode,
+            canClear = totalCount > 0,
+            onDarkModeChange = onDarkModeChange,
+            onReload = {
+                showSettingsSheet = false
+                onReload()
+            },
+            onClear = {
+                showSettingsSheet = false
+                showClearConfirmation = true
+            },
+            onDismiss = { showSettingsSheet = false },
+        )
     }
 
     if (showClearConfirmation) {
