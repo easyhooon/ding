@@ -127,6 +127,8 @@ class MainActivity : Activity() {
         val remoteMessage = RemoteMessage.Builder("ding-sample@fcm.googleapis.com")
             .setMessageId(messageId)
             .setMessageType("sample")
+            .addData("title", "Ding sample notification")
+            .addData("body", "This mock FCM message is ready to inspect.")
             .addData("event", "manual-fcm-capture")
             .addData("message-id", messageId)
             .build()

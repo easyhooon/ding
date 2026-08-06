@@ -318,14 +318,18 @@ private fun NotificationMessageCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CategoryBadge(item.tag, item.categoryLabel)
                 Spacer(Modifier.width(8.dp))
-                Text(
-                    text = item.source,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (item.source.equals(item.categoryLabel, ignoreCase = true)) {
+                    Spacer(Modifier.weight(1f))
+                } else {
+                    Text(
+                        text = item.source,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Text(
                     text = item.receivedAt,
                     style = MaterialTheme.typography.labelSmall,
