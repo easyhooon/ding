@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build Ding in `easyhooon/notification-inspector` as a reusable Android debug library for inspecting notification-related payloads in real apps.
+Build `easyhooon/ding` as a reusable Android debug library for inspecting notification-related payloads in real apps.
 
 The library starts from the Hime-incubated implementation, then grows toward a Dari-like developer experience without coupling itself to Hime.
 
@@ -108,7 +108,7 @@ When implemented later, shake-to-open must be:
 ## Initial Repository Shape
 
 ```text
-notification-inspector/
+ding/
 ├── docs/
 │   └── WORK_STRATEGY.md
 ├── ding/

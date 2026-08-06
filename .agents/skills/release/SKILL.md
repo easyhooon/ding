@@ -58,7 +58,7 @@ Use the Dari release note structure:
   * <key change>
   * <developer impact>
 
-**Full Changelog**: https://github.com/easyhooon/notification-inspector/compare/<previous-tag>...<version>
+**Full Changelog**: https://github.com/easyhooon/ding/compare/<previous-tag>...<version>
 ```
 
 For the first release, replace the comparison link with the repository release URL and state that it is the initial release.
