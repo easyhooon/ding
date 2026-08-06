@@ -14,12 +14,12 @@
 
 ## Validation
 
-- [ ] `:notification-inspector:ktlintCheck`
-- [ ] `:notification-inspector-noop:ktlintCheck`
-- [ ] `:notification-inspector:detekt`
-- [ ] `:notification-inspector-noop:detekt`
-- [ ] `:notification-inspector:lintRelease`
-- [ ] `:notification-inspector-noop:lintRelease`
+- [ ] `:ding:ktlintCheck`
+- [ ] `:ding-noop:ktlintCheck`
+- [ ] `:ding:detekt`
+- [ ] `:ding-noop:detekt`
+- [ ] `:ding:lintRelease`
+- [ ] `:ding-noop:lintRelease`
 - [ ] `:sample:assembleDebug`
 - [ ] `:sample:assembleRelease`
 - [ ] Device or emulator smoke test, when applicable

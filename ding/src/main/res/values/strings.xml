@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ding_name">Ding</string>
+    <string name="ding_shortcut_label">Open Ding</string>
+    <string name="ding_shortcut_long_label">Open Ding notification inspector</string>
+    <string name="ding_channel_name">Ding</string>
+    <string name="ding_channel_description">Persistent access to captured debug notification payloads</string>
+    <string name="ding_persistent_title">Ding</string>
+    <string name="ding_persistent_empty">Ready to inspect notification payloads</string>
+    <string name="ding_other_category">Other</string>
+    <plurals name="ding_persistent_summary">
+        <item quantity="one">%1$d captured message · Latest: %2$s</item>
+        <item quantity="other">%1$d captured messages · Latest: %2$s</item>
+    </plurals>
+</resources>

@@ -1,21 +1,21 @@
-# Notification Inspector
+# Ding
 
 Android notification payload inspector for debug builds.
 
-Notification Inspector captures notification-related payload snapshots from real apps and provides a debug UI for inspecting them.
+Ding captures notification-related payload snapshots from real apps and provides a debug UI for inspecting them.
 
 ## Current Status
 
-The first extracted version is feature-complete and publication-ready. The debug and no-op artifacts share version `0.1.0`.
+The debug and no-op artifacts share version `0.2.0`.
 
 Initial supported capture paths:
 
 - Firebase `RemoteMessage`
 - app-created local notifications
 
-Inspector UI:
+Ding UI:
 
-- dynamic `Inspector` shortcut on the host app icon
+- dynamic `Open Ding` shortcut with a bell icon on the host app
 - persistent debug notification that opens the inspector when tapped
 - compact newest-first Compose message list
 - FCM / Local source filters and payload search
@@ -28,26 +28,26 @@ Inspector UI:
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.easyhooon:notification-inspector:<version>")
-    releaseImplementation("io.github.easyhooon:notification-inspector-noop:<version>")
+    debugImplementation("io.github.easyhooon:ding:0.2.0")
+    releaseImplementation("io.github.easyhooon:ding-noop:0.2.0")
 }
 ```
 
-Until Maven publication is ready, consume the local modules directly from this repository.
+Version `0.1.0` was published under the retired `notification-inspector` coordinates. Ding `0.2.0` moves to new Maven coordinates, the `io.github.easyhooon.ding` Kotlin package, and the `Ding` public API before external adoption.
 
 ## Usage
 
 ```kotlin
 override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    NotificationInspector.capture(this, remoteMessage)
+    Ding.capture(this, remoteMessage)
 }
 ```
 
-`RemoteMessage` does not expose the registration token targeted by the sender. Keep Notification Inspector's latest-token cache synchronized from `FirebaseMessagingService.onNewToken`:
+`RemoteMessage` does not expose the registration token targeted by the sender. Keep Ding's latest-token cache synchronized from `FirebaseMessagingService.onNewToken`:
 
 ```kotlin
 override fun onNewToken(token: String) {
-    NotificationInspector.updateFcmToken(this, token)
+    Ding.updateFcmToken(this, token)
 }
 ```
 
@@ -55,7 +55,7 @@ Also refresh the cache from `FirebaseMessaging.getToken()` at app startup so a r
 
 ```kotlin
 FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-    NotificationInspector.updateFcmToken(applicationContext, token)
+    Ding.updateFcmToken(applicationContext, token)
 }
 ```
 
@@ -64,7 +64,7 @@ The token is persisted by the debug implementation; subsequent two-argument `cap
 If the host already has the token at capture time, the explicit overload records it and also refreshes the latest-token cache:
 
 ```kotlin
-NotificationInspector.capture(
+Ding.capture(
     context = this,
     remoteMessage = remoteMessage,
     fcmToken = latestFcmToken,
@@ -74,7 +74,7 @@ NotificationInspector.capture(
 Messages captured before a token is registered show `Not captured` in the FCM token section. The stored value is host-supplied context, not proof that the sender targeted that token; topic and condition messages may not target one registration token directly.
 
 ```kotlin
-NotificationInspector.captureNotification(
+Ding.captureNotification(
     context = context,
     source = "notification-test",
     notificationId = notificationId,
@@ -84,12 +84,12 @@ NotificationInspector.captureNotification(
 )
 ```
 
-The debug implementation initializes automatically when the host app starts. Long-press the host app icon and select `Inspector`, or tap the persistent Inspector notification, to open the captured payload list. The library no longer adds a separate launcher icon.
+The debug implementation initializes automatically when the host app starts. Long-press the host app icon and select `Open Ding`, or tap the persistent Ding notification, to open the captured payload list. The library does not add a separate launcher icon.
 
 The persistent notification is enabled by default. It only shows the captured count and latest category. Disable it when the notification entry point is not wanted:
 
 ```kotlin
-NotificationInspector.setPersistentNotificationEnabled(context, enabled = false)
+Ding.setPersistentNotificationEnabled(context, enabled = false)
 ```
 
 Call the same API with `enabled = true` to restore it. The explicit choice persists across process restarts. On Android 13 and newer, the host app remains responsible for requesting `POST_NOTIFICATIONS` at an appropriate time.
@@ -105,12 +105,12 @@ Run the `sample` module and tap:
 - `Send Local Notification`
 - `Capture Mock FCM Message`
 - `Rotate Sample FCM Token`
-- `Enable Persistent Inspector`
-- `Disable Persistent Inspector`
-- `Open Inspector`
+- `Enable Ding notification`
+- `Disable Ding notification`
+- `Open Ding`
 
 The captured local notification appears under the `Local` filter, and the mock remote message appears under `FCM`.
 
 ## Privacy
 
-Notification payloads can contain personal data, authentication material, or internal identifiers. FCM registration tokens identify app instances and are included in raw JSON and exports when captured. Keep the inspector on debug builds, review copied or exported content before sharing it, and never attach raw production payloads or tokens to public issues.
+Notification payloads can contain personal data, authentication material, or internal identifiers. FCM registration tokens identify app instances and are included in raw JSON and exports when captured. Keep Ding on debug builds, review copied or exported content before sharing it, and never attach raw production payloads or tokens to public issues.

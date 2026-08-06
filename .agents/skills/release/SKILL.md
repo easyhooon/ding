@@ -1,18 +1,18 @@
 ---
 name: release
-description: Publish Notification Inspector artifacts to Maven Central and create English GitHub release notes in the Dari format.
+description: Publish Ding artifacts to Maven Central and create English GitHub release notes in the Dari format.
 argument-hint: "[version]"
 user-invocable: true
 disable-model-invocation: true
 ---
 
-# Release Notification Inspector
+# Release Ding
 
-Release `notification-inspector` and `notification-inspector-noop` together. All release notes, tags, commits, and repository documents must be English.
+Release `ding` and `ding-noop` together. All release notes, tags, commits, and repository documents must be English.
 
 ## 1. Verify the version
 
-Read `notification-inspector` in `gradle/libs.versions.toml`. If a version argument is supplied, it must match the catalog value. If it differs, stop and ask the user to update and commit the catalog version before restarting the release. Both published modules must use that single catalog version.
+Read `ding` in `gradle/libs.versions.toml`. If a version argument is supplied, it must match the catalog value. If it differs, stop and ask the user to update and commit the catalog version before restarting the release. Both published modules must use that single catalog version.
 
 ## 2. Verify prerequisites
 
@@ -35,13 +35,13 @@ Confirm that both artifacts and their POM files were generated for the intended 
 
 Show the version and artifact coordinates, then request explicit user confirmation before uploading:
 
-- `io.github.easyhooon:notification-inspector:<version>`
-- `io.github.easyhooon:notification-inspector-noop:<version>`
+- `io.github.easyhooon:ding:<version>`
+- `io.github.easyhooon:ding-noop:<version>`
 
 After approval, run the clean publication command required by `AGENTS.md`:
 
 ```bash
-./gradlew clean publishAllPublicationsToMavenCentralRepository
+./gradlew clean publishAndReleaseToMavenCentral
 ```
 
 Stop on any build, signing, or upload failure.
