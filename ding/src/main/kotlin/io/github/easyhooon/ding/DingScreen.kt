@@ -25,6 +25,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -191,6 +193,14 @@ private fun NotificationListScreen(
                     }
                 },
                 actions = {
+                    CopyShareMenu(
+                        copyLabel = "Copy filtered JSON",
+                        shareLabel = "Share filtered text",
+                        contentDescription = "Filtered message actions",
+                        enabled = items.isNotEmpty(),
+                        onCopy = onCopyFiltered,
+                        onShare = onShareFiltered,
+                    )
                     TextButton(onClick = onReload) { Text("Reload") }
                     TextButton(
                         onClick = { showClearConfirmation = true },
@@ -231,20 +241,6 @@ private fun NotificationListScreen(
                         onClick = { onFilterSelected(tag) },
                         label = { Text(tag.label) },
                     )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TextButton(onClick = onCopyFiltered, enabled = items.isNotEmpty()) {
-                    Text("Copy filtered JSON")
-                }
-                TextButton(onClick = onShareFiltered, enabled = items.isNotEmpty()) {
-                    Text("Share filtered text")
                 }
             }
 
@@ -411,6 +407,15 @@ private fun NotificationDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    CopyShareMenu(
+                        copyLabel = "Copy raw JSON",
+                        shareLabel = "Share message",
+                        contentDescription = "Message actions",
+                        onCopy = { onCopy(item.rawJson) },
+                        onShare = onShareMessage,
+                    )
+                },
             )
         },
     ) { contentPadding ->
@@ -429,8 +434,6 @@ private fun NotificationDetailScreen(
                 }
             }
 
-            DetailActions(item = item, onCopy = onCopy, onShare = onShareMessage)
-
             Box(modifier = Modifier.weight(1f)) {
                 when (selectedTab) {
                     NotificationDetailTab.OVERVIEW -> OverviewTab(
@@ -446,19 +449,45 @@ private fun NotificationDetailScreen(
 }
 
 @Composable
-private fun DetailActions(
-    item: NotificationSnapshotUiModel,
-    onCopy: (String) -> Unit,
+private fun CopyShareMenu(
+    copyLabel: String,
+    shareLabel: String,
+    contentDescription: String,
+    enabled: Boolean = true,
+    onCopy: () -> Unit,
     onShare: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp),
-    ) {
-        TextButton(onClick = { onCopy(item.rawJson) }) { Text("Copy raw JSON") }
-        TextButton(onClick = onShare) { Text("Share message") }
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(
+            onClick = { expanded = true },
+            enabled = enabled,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_share),
+                contentDescription = contentDescription,
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(copyLabel) },
+                onClick = {
+                    expanded = false
+                    onCopy()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(shareLabel) },
+                onClick = {
+                    expanded = false
+                    onShare()
+                },
+            )
+        }
     }
 }
 
