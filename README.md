@@ -17,9 +17,9 @@ See notification history at a glance, then drill into capture metadata and raw p
     <td align="center"><b>Settings</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/ding-list.png" width="270" /></td>
-    <td><img src="screenshots/ding-list-actions.png" width="270" /></td>
-    <td><img src="screenshots/ding-settings.png" width="270" /></td>
+    <td><img src="screenshots/ding-list.png" alt="Ding message list" width="270" /></td>
+    <td><img src="screenshots/ding-list-actions.png" alt="Filtered message actions menu" width="270" /></td>
+    <td><img src="screenshots/ding-settings.png" alt="Ding settings sheet" width="270" /></td>
   </tr>
   <tr>
     <td align="center"><b>Overview</b></td>
@@ -27,9 +27,9 @@ See notification history at a glance, then drill into capture metadata and raw p
     <td align="center"><b>Dark Mode</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/ding-overview-clean.png" width="270" /></td>
-    <td><img src="screenshots/ding-raw.png" width="270" /></td>
-    <td><img src="screenshots/ding-dark.png" width="270" /></td>
+    <td><img src="screenshots/ding-overview-clean.png" alt="Captured notification overview" width="270" /></td>
+    <td><img src="screenshots/ding-raw.png" alt="Raw notification JSON payload" width="270" /></td>
+    <td><img src="screenshots/ding-dark.png" alt="Ding message list in dark mode" width="270" /></td>
   </tr>
 </table>
 
