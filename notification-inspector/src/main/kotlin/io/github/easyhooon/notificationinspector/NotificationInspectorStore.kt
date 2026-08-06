@@ -13,6 +13,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -23,6 +24,7 @@ import java.io.IOException
 
 internal class NotificationInspectorStore(context: Context) {
     private val appContext = context.applicationContext
+    private val packageName = appContext.packageName
     private val dataStore = dataStore(appContext)
 
     fun appendAsync(
@@ -35,6 +37,34 @@ internal class NotificationInspectorStore(context: Context) {
                 onStored()
             }.onFailure { error ->
                 Log.w(TAG, "Failed to store notification snapshot", error)
+            }
+        }
+    }
+
+    fun appendWithFcmTokenAsync(
+        suppliedFcmToken: String?,
+        snapshotProvider: (String?) -> JSONObject,
+        onStored: suspend () -> Unit = {},
+    ) {
+        enqueueFcmTokenOperation {
+            runCatching {
+                val fcmToken = suppliedFcmToken ?: readFcmToken()
+                val snapshot = snapshotProvider(fcmToken)
+                append(snapshot)
+                onStored()
+            }.onFailure { error ->
+                Log.w(TAG, "Failed to store notification snapshot", error)
+            }
+        }
+    }
+
+    fun updateFcmTokenAsync(fcmToken: String) {
+        enqueueFcmTokenOperation {
+            runCatching {
+                cacheFcmToken(fcmToken)
+                setFcmToken(fcmToken)
+            }.onFailure { error ->
+                Log.w(TAG, "Failed to store FCM registration token", error)
             }
         }
     }
@@ -67,6 +97,13 @@ internal class NotificationInspectorStore(context: Context) {
         }
     }
 
+    suspend fun readFcmToken(): String? {
+        cachedFcmToken()?.let { return it }
+        return mutex.withLock {
+            readPreferences()[KEY_FCM_TOKEN]
+        }?.also(::cacheFcmToken)
+    }
+
     private suspend fun append(snapshot: JSONObject) {
         mutex.withLock {
             dataStore.edit { preferences ->
@@ -80,6 +117,14 @@ internal class NotificationInspectorStore(context: Context) {
                 next.put(snapshot)
 
                 preferences[KEY_MESSAGES] = next.toString()
+            }
+        }
+    }
+
+    private suspend fun setFcmToken(fcmToken: String) {
+        mutex.withLock {
+            dataStore.edit { preferences ->
+                preferences[KEY_FCM_TOKEN] = fcmToken
             }
         }
     }
@@ -108,18 +153,47 @@ internal class NotificationInspectorStore(context: Context) {
         }
     }
 
+    private fun cachedFcmToken(): String? {
+        return synchronized(fcmTokenCache) {
+            fcmTokenCache[packageName]
+        }
+    }
+
+    private fun cacheFcmToken(fcmToken: String) {
+        synchronized(fcmTokenCache) {
+            fcmTokenCache[packageName] = fcmToken
+        }
+    }
+
+    private fun enqueueFcmTokenOperation(operation: suspend () -> Unit) {
+        if (fcmTokenOperations.trySend(operation).isFailure) {
+            Log.w(TAG, "Failed to enqueue FCM token operation")
+        }
+    }
+
     private companion object {
         private const val TAG = "NotificationInspector"
         private const val DATA_STORE_NAME = "notification_inspector.preferences_pb"
         private const val KEY_MESSAGES_NAME = "messages"
         private const val KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME = "persistent_notification_enabled"
+        private const val KEY_FCM_TOKEN_NAME = "fcm_token"
         private const val MAX_MESSAGES = 50
         private val KEY_MESSAGES = stringPreferencesKey(KEY_MESSAGES_NAME)
         private val KEY_PERSISTENT_NOTIFICATION_ENABLED =
             booleanPreferencesKey(KEY_PERSISTENT_NOTIFICATION_ENABLED_NAME)
+        private val KEY_FCM_TOKEN = stringPreferencesKey(KEY_FCM_TOKEN_NAME)
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         private val mutex = Mutex()
+        private val fcmTokenOperations =
+            Channel<suspend () -> Unit>(capacity = Channel.UNLIMITED).also { operations ->
+                scope.launch {
+                    for (operation in operations) {
+                        operation()
+                    }
+                }
+            }
         private val stores = mutableMapOf<String, DataStore<Preferences>>()
+        private val fcmTokenCache = mutableMapOf<String, String>()
 
         private fun dataStore(context: Context): DataStore<Preferences> {
             return synchronized(stores) {

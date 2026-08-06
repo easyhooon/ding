@@ -10,12 +10,63 @@ object NotificationInspector {
     private const val TAG = "NotificationInspector"
 
     fun capture(context: Context, remoteMessage: RemoteMessage) {
-        val snapshot = RemoteMessageSnapshot.from(
+        captureRemoteMessage(context = context, remoteMessage = remoteMessage, suppliedFcmToken = null)
+    }
+
+    /**
+     * Captures an FCM message together with the host-supplied registration token known at receipt time.
+     * FCM does not expose or verify the destination token through [RemoteMessage].
+     */
+    fun capture(
+        context: Context,
+        remoteMessage: RemoteMessage,
+        fcmToken: String,
+    ) {
+        captureRemoteMessage(
+            context = context,
             remoteMessage = remoteMessage,
-            receivedAtMillis = System.currentTimeMillis(),
+            suppliedFcmToken = fcmToken.normalizedFcmToken(),
         )
-        store(context, snapshot)
-        Log.d(TAG, snapshot.toString(2))
+    }
+
+    private fun captureRemoteMessage(
+        context: Context,
+        remoteMessage: RemoteMessage,
+        suppliedFcmToken: String?,
+    ) {
+        val appContext = context.applicationContext
+        val store = NotificationInspectorStore(appContext)
+        val receivedAtMillis = System.currentTimeMillis()
+        suppliedFcmToken?.let(store::updateFcmTokenAsync)
+
+        store.appendWithFcmTokenAsync(
+            suppliedFcmToken = suppliedFcmToken,
+            snapshotProvider = { fcmToken ->
+                RemoteMessageSnapshot.from(
+                    remoteMessage = remoteMessage,
+                    fcmToken = fcmToken,
+                    receivedAtMillis = receivedAtMillis,
+                ).also { snapshot ->
+                    Log.d(TAG, snapshot.toString(2))
+                }
+            },
+            onStored = {
+                PersistentNotificationController.refreshIfEnabled(appContext, store)
+            },
+        )
+    }
+
+    /**
+     * Replaces the latest registration token used by subsequent two-argument [capture] calls.
+     * Call this from `FirebaseMessagingService.onNewToken` and after startup token retrieval.
+     */
+    fun updateFcmToken(context: Context, fcmToken: String) {
+        val normalizedToken = fcmToken.normalizedFcmToken()
+        if (normalizedToken == null) {
+            Log.w(TAG, "Ignoring a blank FCM registration token")
+            return
+        }
+        NotificationInspectorStore(context).updateFcmTokenAsync(normalizedToken)
     }
 
     fun captureNotification(
@@ -54,5 +105,9 @@ object NotificationInspector {
         store.appendAsync(snapshot) {
             PersistentNotificationController.refreshIfEnabled(appContext, store)
         }
+    }
+
+    private fun String.normalizedFcmToken(): String? {
+        return trim().takeIf { it.isNotEmpty() }
     }
 }

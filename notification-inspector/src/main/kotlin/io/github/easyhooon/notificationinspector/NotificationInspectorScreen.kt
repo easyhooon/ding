@@ -27,6 +27,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
@@ -48,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -120,8 +123,11 @@ private fun NotificationInspectorRoute(
             item = detailItem,
             onBack = { selectedItem = null },
             onCopy = onCopy,
-            onShare = {
+            onShareMessage = {
                 onShare("Notification Inspector message", detailItem.rawJson)
+            },
+            onShareFcmToken = { fcmToken ->
+                onShare("FCM registration token at capture", fcmToken)
             },
         )
         return
@@ -347,7 +353,8 @@ private fun NotificationDetailScreen(
     item: NotificationSnapshotUiModel,
     onBack: () -> Unit,
     onCopy: (String) -> Unit,
-    onShare: () -> Unit,
+    onShareMessage: () -> Unit,
+    onShareFcmToken: (String) -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(NotificationDetailTab.OVERVIEW) }
     BackHandler(onBack = onBack)
@@ -359,7 +366,12 @@ private fun NotificationDetailScreen(
                     Text(item.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 },
                 navigationIcon = {
-                    TextButton(onClick = onBack) { Text("Back") }
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = "Back",
+                        )
+                    }
                 },
             )
         },
@@ -379,14 +391,16 @@ private fun NotificationDetailScreen(
                 }
             }
 
-            DetailActions(item = item, onCopy = onCopy, onShare = onShare)
+            DetailActions(item = item, onCopy = onCopy, onShare = onShareMessage)
 
             Box(modifier = Modifier.weight(1f)) {
                 when (selectedTab) {
-                    NotificationDetailTab.OVERVIEW -> OverviewTab(item)
-                    NotificationDetailTab.DATA -> JsonTab(item.dataJson)
-                    NotificationDetailTab.NOTIFICATION -> JsonTab(item.notificationJson)
-                    NotificationDetailTab.RAW_JSON -> JsonTab(item.rawJson)
+                    NotificationDetailTab.OVERVIEW -> OverviewTab(
+                        item = item,
+                        onCopy = onCopy,
+                        onShareFcmToken = onShareFcmToken,
+                    )
+                    NotificationDetailTab.RAW -> JsonTab(item.rawJson)
                 }
             }
         }
@@ -413,7 +427,11 @@ private fun DetailActions(
 }
 
 @Composable
-private fun OverviewTab(item: NotificationSnapshotUiModel) {
+private fun OverviewTab(
+    item: NotificationSnapshotUiModel,
+    onCopy: (String) -> Unit,
+    onShareFcmToken: (String) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -421,6 +439,14 @@ private fun OverviewTab(item: NotificationSnapshotUiModel) {
             .padding(16.dp),
     ) {
         CategoryBadge(item.tag, item.categoryLabel)
+        if (item.tag == NotificationFilterTag.FCM) {
+            Spacer(Modifier.height(16.dp))
+            FcmTokenCard(
+                token = item.fcmToken,
+                onCopy = onCopy,
+                onShare = onShareFcmToken,
+            )
+        }
         Spacer(Modifier.height(16.dp))
         item.overview.forEachIndexed { index, (label, value) ->
             Column(modifier = Modifier.padding(vertical = 10.dp)) {
@@ -434,6 +460,61 @@ private fun OverviewTab(item: NotificationSnapshotUiModel) {
             }
             if (index < item.overview.lastIndex) {
                 HorizontalDivider()
+            }
+        }
+    }
+}
+
+@Composable
+private fun FcmTokenCard(
+    token: String?,
+    onCopy: (String) -> Unit,
+    onShare: (String) -> Unit,
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "FCM token at capture",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                IconButton(
+                    enabled = token != null,
+                    onClick = { token?.let(onCopy) },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_content_copy),
+                        contentDescription = "Copy FCM token at capture",
+                    )
+                }
+                IconButton(
+                    enabled = token != null,
+                    onClick = { token?.let(onShare) },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_share),
+                        contentDescription = "Share FCM token at capture",
+                    )
+                }
+            }
+
+            SelectionContainer {
+                Text(
+                    text = token ?: "Not captured. Pass the host app's registration token when capturing this message.",
+                    modifier = Modifier.fillMaxWidth(),
+                    fontFamily = if (token == null) FontFamily.Default else FontFamily.Monospace,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (token == null) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
             }
         }
     }
@@ -458,9 +539,7 @@ private enum class NotificationDetailTab(
     val label: String,
 ) {
     OVERVIEW("Overview"),
-    DATA("Data"),
-    NOTIFICATION("Notification"),
-    RAW_JSON("Raw JSON"),
+    RAW("Raw"),
 }
 
 private fun List<NotificationSnapshotUiModel>.toJsonExport(): String {
