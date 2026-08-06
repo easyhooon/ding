@@ -35,7 +35,7 @@ mavenPublishing {
         name.set("Ding No-Op")
         description.set("No-op Ding implementation for release builds")
         inceptionYear.set("2026")
-        url.set("https://github.com/easyhooon/notification-inspector")
+        url.set("https://github.com/easyhooon/ding")
 
         licenses {
             license {
@@ -53,9 +53,9 @@ mavenPublishing {
         }
 
         scm {
-            url.set("https://github.com/easyhooon/notification-inspector")
-            connection.set("scm:git:git://github.com/easyhooon/notification-inspector.git")
-            developerConnection.set("scm:git:ssh://git@github.com/easyhooon/notification-inspector.git")
+            url.set("https://github.com/easyhooon/ding")
+            connection.set("scm:git:git://github.com/easyhooon/ding.git")
+            developerConnection.set("scm:git:ssh://git@github.com/easyhooon/ding.git")
         }
     }
 

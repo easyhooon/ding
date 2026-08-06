@@ -2,6 +2,8 @@
 
 Android notification payload inspector for debug builds.
 
+`Ding` takes its name from the short sound of a notification arriving—a small cue that something happened and is ready to inspect.
+
 Ding captures notification-related payload snapshots from real apps and provides a debug UI for inspecting them.
 
 ## Current Status
