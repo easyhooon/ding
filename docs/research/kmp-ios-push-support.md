@@ -61,7 +61,7 @@ FCM sends every message targeting an Apple app through APNs. Firebase instructs 
 - `UNUserNotificationCenterDelegate.userNotificationCenter(_:didReceive:)` after the user interacts with a delivered notification.
 - `UIApplicationDelegate.application(_:didReceiveRemoteNotification:fetchCompletionHandler:)` for silent/background pushes.
 
-All three expose the APNs dictionary as `userInfo`. They are therefore sufficient for a Firebase-independent Ding capture function such as `captureApple(userInfo:)`. See Firebase's [Apple receive guide](https://firebase.google.com/docs/cloud-messaging/ios/receive-messages) and Apple's [notification handling guide](https://developer.apple.com/documentation/usernotifications/handling-notifications-and-notification-related-actions).
+All three expose the APNs dictionary as `userInfo`. They are therefore sufficient for a Firebase-independent Ding capture function such as `captureAppleUserInfo(userInfo:)`. See Firebase's [Apple receive guide](https://firebase.google.com/docs/cloud-messaging/ios/receive-messages) and Apple's [notification handling guide](https://developer.apple.com/documentation/usernotifications/handling-notifications-and-notification-related-actions).
 
 Coverage differs by application state:
 
@@ -274,7 +274,7 @@ func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification
 ) async -> UNNotificationPresentationOptions {
-    Ding.captureApple(
+    Ding.captureAppleUserInfo(
         userInfo: notification.request.content.userInfo,
         transport: .fcmApns,
         capturePoint: .foreground
@@ -286,7 +286,7 @@ func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse
 ) async {
-    Ding.captureApple(
+    Ding.captureAppleUserInfo(
         userInfo: response.notification.request.content.userInfo,
         transport: .fcmApns,
         capturePoint: .notificationResponse
@@ -297,7 +297,7 @@ func application(
     _ application: UIApplication,
     didReceiveRemoteNotification userInfo: [AnyHashable: Any]
 ) async -> UIBackgroundFetchResult {
-    Ding.captureApple(
+    Ding.captureAppleUserInfo(
         userInfo: userInfo,
         transport: .fcmApns,
         capturePoint: .backgroundCallback
