@@ -17,6 +17,8 @@ This file records recurring CodeRabbit findings and their outcomes. When the sam
 | Restore sample demo state before publishing it to the inspector | 1 | #3 | 2026-08-06 |
 | Remove legacy product wording during complete rebrands | 1 | #7 | 2026-08-06 |
 | Add descriptive alt text to README screenshots | 1 | #13 | 2026-08-06 |
+| Disable persisted checkout credentials in read-only CI jobs | 1 | #15 | 2026-08-07 |
+| Keep documented API entry-point names consistent in examples | 1 | #15 | 2026-08-07 |
 
 ## Declined patterns
 

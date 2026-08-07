@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -33,6 +35,8 @@ jobs:
       - name: Verify libraries and sample
         run: >-
           ./gradlew
+          :ding-core:ktlintCheck
+          :ding-core:testAndroidHostTest
           :ding:ktlintCheck
           :ding-noop:ktlintCheck
           :ding:detekt
@@ -41,3 +45,26 @@ jobs:
           :ding-noop:lintRelease
           :sample:assembleDebug
           :sample:assembleRelease
+
+  verify-apple:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Compile Apple targets
+        run: >-
+          ./gradlew
+          :ding-core:compileKotlinIosArm64
+          :ding-core:compileKotlinIosSimulatorArm64

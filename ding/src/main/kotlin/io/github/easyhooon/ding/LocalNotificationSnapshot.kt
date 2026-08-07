@@ -1,5 +1,7 @@
 package io.github.easyhooon.ding
 
+import io.github.easyhooon.ding.core.DingSnapshotJson
+import io.github.easyhooon.ding.core.LocalNotificationSnapshotInput
 import org.json.JSONObject
 
 internal object LocalNotificationSnapshot {
@@ -11,31 +13,18 @@ internal object LocalNotificationSnapshot {
         data: Map<String, String>,
         receivedAtMillis: Long,
     ): JSONObject {
-        return JSONObject().apply {
-            put("type", "local-notification")
-            put("source", source)
-            put("tag", NotificationFilterTag.LOCAL.jsonValue)
-            put("receivedAtMillis", receivedAtMillis)
-            put("notificationId", notificationId)
-            put("title", title)
-            put("body", body)
-            put("data", dataJson(data))
-            put(
-                "notification",
-                JSONObject().apply {
-                    put("notificationId", notificationId)
-                    put("title", title)
-                    put("body", body)
-                },
-            )
-        }
-    }
-
-    private fun dataJson(data: Map<String, String>): JSONObject {
-        return JSONObject().apply {
-            data.toSortedMap().forEach { (key, value) ->
-                put(key, value)
-            }
-        }
+        val input = LocalNotificationSnapshotInput(
+            source = source,
+            notificationId = notificationId,
+            title = title,
+            body = body,
+            data = data,
+        )
+        return JSONObject(
+            DingSnapshotJson.localNotification(
+                input = input,
+                receivedAtMillis = receivedAtMillis,
+            ),
+        )
     }
 }
