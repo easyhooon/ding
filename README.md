@@ -35,7 +35,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 ## Current Status
 
-The debug and no-op artifacts share version `0.3.0`.
+The debug and no-op artifacts share version `0.4.0`.
 
 Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local or Room-backed storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. A SwiftPM-ready XCFramework archive can now be built locally; remote package distribution will follow separately. See [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
@@ -61,8 +61,8 @@ Ding UI:
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.easyhooon:ding:0.3.0")
-    releaseImplementation("io.github.easyhooon:ding-noop:0.3.0")
+    debugImplementation("io.github.easyhooon:ding:0.4.0")
+    releaseImplementation("io.github.easyhooon:ding-noop:0.4.0")
 }
 ```
 
