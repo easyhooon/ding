@@ -76,9 +76,9 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 ### Phase 5: Kotlin Multiplatform Support
 
 - Keep the existing Android `ding` and `ding-noop` artifacts source-compatible.
-- Move payload normalization into a Firebase-independent `ding-core` KMP module.
+- Normalize Android payloads and Apple `userInfo` in a Firebase-independent `ding-core` KMP module.
 - Preserve Android's existing stored fields while adding platform, transport, capture-point, and raw-delivered-payload context.
-- Add the Apple APNs `userInfo` adapter, persistence, and SPM distribution as separate follow-up slices.
+- Add Apple host capture, persistence, and SPM distribution as separate follow-up slices.
 - Keep Firebase optional on Apple platforms and treat `firebase-kotlin-sdk` as an optional interoperability target.
 
 ## Backlog

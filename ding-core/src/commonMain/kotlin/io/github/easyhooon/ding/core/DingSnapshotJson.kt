@@ -48,11 +48,11 @@ public object DingSnapshotJson {
         val deliveredPayload = remoteMessagePayload(input)
         val snapshot = linkedMapOf<String, JsonElement>(
             "type" to JsonPrimitive("remote-message"),
-            "source" to JsonPrimitive("fcm"),
-            "tag" to JsonPrimitive("fcm"),
-            "platform" to JsonPrimitive("android"),
-            "transport" to JsonPrimitive("fcm"),
-            "capturePoint" to JsonPrimitive("host-callback"),
+            "source" to JsonPrimitive(PushTransport.FCM.jsonValue),
+            "tag" to JsonPrimitive(PushTransport.FCM.jsonValue),
+            "platform" to JsonPrimitive(PushPlatform.ANDROID.jsonValue),
+            "transport" to JsonPrimitive(PushTransport.FCM.jsonValue),
+            "capturePoint" to JsonPrimitive(CapturePoint.HOST_CALLBACK.jsonValue),
             "receivedAtMillis" to JsonPrimitive(receivedAtMillis),
             "fcmToken" to fcmToken.asJsonElement(),
         )
@@ -83,10 +83,10 @@ public object DingSnapshotJson {
             linkedMapOf(
                 "type" to JsonPrimitive("local-notification"),
                 "source" to JsonPrimitive(input.source),
-                "tag" to JsonPrimitive("local"),
-                "platform" to JsonPrimitive("android"),
-                "transport" to JsonPrimitive("local"),
-                "capturePoint" to JsonPrimitive("host-api"),
+                "tag" to JsonPrimitive(PushTransport.LOCAL.jsonValue),
+                "platform" to JsonPrimitive(PushPlatform.ANDROID.jsonValue),
+                "transport" to JsonPrimitive(PushTransport.LOCAL.jsonValue),
+                "capturePoint" to JsonPrimitive(CapturePoint.HOST_API.jsonValue),
                 "receivedAtMillis" to JsonPrimitive(receivedAtMillis),
                 "notificationId" to JsonPrimitive(input.notificationId),
                 "title" to JsonPrimitive(input.title),
@@ -94,6 +94,57 @@ public object DingSnapshotJson {
                 "data" to data,
                 "notification" to notification,
                 "rawDeliveredPayload" to JsonObject(deliveredPayload),
+            ),
+        ).toString()
+    }
+
+    public fun applePush(
+        input: ApplePushSnapshotInput,
+        receivedAtMillis: Long,
+    ): String {
+        val rawPayload = DingJsonValueNormalizer.normalizeObject(input.userInfo)
+        val aps = rawPayload["aps"] as? JsonObject
+        val alert = aps?.get("alert")
+        val alertObject = alert as? JsonObject
+        val nestedData = rawPayload["data"] as? JsonObject
+        val title = firstNonBlank(
+            alertObject.stringValue("title"),
+            rawPayload.stringValue("title"),
+            nestedData.stringValue("title"),
+        )
+        val body = firstNonBlank(
+            alertObject.stringValue("body"),
+            alert.stringValue(),
+            rawPayload.stringValue("body"),
+            nestedData.stringValue("body"),
+        )
+        val data = JsonObject(rawPayload.filterKeys { it != "aps" })
+        val notification = JsonObject(
+            linkedMapOf(
+                "title" to title.asJsonElement(),
+                "body" to body.asJsonElement(),
+            ),
+        )
+        val tag = when (input.transport) {
+            PushTransport.FCM, PushTransport.FCM_APNS -> PushTransport.FCM.jsonValue
+            else -> input.transport.jsonValue
+        }
+
+        return JsonObject(
+            linkedMapOf(
+                "type" to JsonPrimitive("remote-notification"),
+                "source" to JsonPrimitive(input.transport.jsonValue),
+                "tag" to JsonPrimitive(tag),
+                "platform" to JsonPrimitive(PushPlatform.IOS.jsonValue),
+                "transport" to JsonPrimitive(input.transport.jsonValue),
+                "capturePoint" to JsonPrimitive(input.capturePoint.jsonValue),
+                "receivedAtMillis" to JsonPrimitive(receivedAtMillis),
+                "registrationToken" to input.registrationToken.asJsonElement(),
+                "title" to title.asJsonElement(),
+                "body" to body.asJsonElement(),
+                "data" to data,
+                "notification" to notification,
+                "rawDeliveredPayload" to rawPayload,
             ),
         ).toString()
     }
@@ -132,6 +183,30 @@ public object DingSnapshotJson {
 
     private fun String?.asJsonElement(): JsonElement =
         this?.let(::JsonPrimitive) ?: JsonNull
+
+    private fun RegistrationTokenSnapshotInput?.asJsonElement(): JsonElement {
+        this ?: return JsonNull
+        return JsonObject(
+            linkedMapOf(
+                "kind" to JsonPrimitive(kind.jsonValue),
+                "value" to JsonPrimitive(value),
+            ),
+        )
+    }
+
+    private fun JsonObject?.stringValue(key: String): String? =
+        this?.get(key).stringValue()
+
+    private fun JsonElement?.stringValue(): String? {
+        val primitive = this as? JsonPrimitive ?: return null
+        return primitive
+            .takeIf { it.isString }
+            ?.content
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    private fun firstNonBlank(vararg values: String?): String? =
+        values.firstOrNull { !it.isNullOrBlank() }
 
     private fun Map<String, String>.toSortedJsonObject(): JsonObject =
         JsonObject(
