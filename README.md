@@ -129,7 +129,7 @@ Call the same API with `enabled = true` to restore it. The explicit choice persi
 
 ### KMP Apple capture preview
 
-`ding-core` provides a host-owned capture façade for forwarding the original APNs `userInfo` without installing or replacing notification delegates:
+`ding-core` provides a host-owned capture façade for forwarding the original APNs `userInfo` without installing or replacing notification delegates. Create the persistent store from the Apple source set (`iosMain`):
 
 ```kotlin
 val store = PersistentDingCaptureStore.get(
@@ -145,7 +145,7 @@ ding.captureAppleUserInfo(
 )
 ```
 
-FCM and APNs tokens are cached separately, and every snapshot retains the token that was current when it was captured. The host must supply one stable, app-private path ending in `.preferences_pb`; the default retention is the newest 50 snapshots. Reuse the returned store instead of creating competing DataStore instances for the same path.
+FCM and APNs tokens are stored separately, and every snapshot retains the token that was current when it was captured. The host must supply one stable, app-private path ending in `.db`; the Room-backed store keeps the newest 50 snapshots by default. Reuse the returned store for that path.
 
 `InMemoryDingCaptureStore` remains available when process-local history is sufficient. The persistent store currently targets callbacks in the main app process. Notification Service Extension/App Group sharing and the Swift Package Manager façade are intentionally separate follow-up steps, so this API is primarily for KMP source integration.
 

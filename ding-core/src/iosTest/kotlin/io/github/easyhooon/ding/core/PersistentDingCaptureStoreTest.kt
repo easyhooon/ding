@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 
 class PersistentDingCaptureStoreTest {
     @Test
-    fun snapshotsAndTokensPersistInThePathBackedStore() = runTest {
+    fun snapshotsAndTokensPersistInTheRoomStore() = runTest {
         val storagePath = temporaryPersistentStorePath()
         val store = PersistentDingCaptureStore.get(storagePath, maxSnapshots = 2)
         store.append("first")
@@ -51,7 +51,7 @@ class PersistentDingCaptureStoreTest {
     }
 
     @Test
-    fun storagePathMustUseTheDataStoreExtension() = runTest {
+    fun storagePathMustUseTheRoomDatabaseExtension() = runTest {
         val result = runCatching {
             PersistentDingCaptureStore.get("invalid-path")
         }

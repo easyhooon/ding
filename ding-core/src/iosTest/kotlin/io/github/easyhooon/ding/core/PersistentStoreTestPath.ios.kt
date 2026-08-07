@@ -4,8 +4,8 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
 import kotlin.random.Random
 
-internal actual fun temporaryPersistentStorePath(): String =
-    "${NSTemporaryDirectory()}ding-${currentTimeMillis()}-${Random.nextLong()}.preferences_pb"
+internal fun temporaryPersistentStorePath(): String =
+    "${NSTemporaryDirectory()}ding-${currentTimeMillis()}-${Random.nextLong()}.db"
 
-internal actual fun persistentStoreFileExists(storagePath: String): Boolean =
+internal fun persistentStoreFileExists(storagePath: String): Boolean =
     NSFileManager.defaultManager.fileExistsAtPath(storagePath)
