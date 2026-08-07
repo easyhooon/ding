@@ -57,7 +57,9 @@ Ding UI:
 - settings sheet with persistent System / Light / Dark theme selection
 - reload, clear-all, library version, and GitHub actions in settings
 
-## Gradle
+## Installation
+
+### Android
 
 ```kotlin
 dependencies {
@@ -65,6 +67,24 @@ dependencies {
     releaseImplementation("io.github.easyhooon:ding-noop:0.4.0")
 }
 ```
+
+`ding` resolves `ding-core` transitively. Android applications should not add the core artifact or its platform variants separately.
+
+### Kotlin Multiplatform
+
+Add the shared core only when capturing and processing notification snapshots from KMP source sets:
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.easyhooon:ding-core:0.4.0")
+        }
+    }
+}
+```
+
+Gradle selects the Android or Apple platform variant automatically. Do not declare artifacts such as `ding-core-android` or `ding-core-iosarm64` directly. A KMP application's Android app module can still use the `ding` / `ding-noop` configuration above to include the inspector UI only in debug builds. SwiftPM distribution for native Apple consumers is not remote yet; the local XCFramework preview is documented below.
 
 Version `0.1.0` was published under the retired `notification-inspector` coordinates. Ding `0.2.0` moves to new Maven coordinates, the `io.github.easyhooon.ding` Kotlin package, and the `Ding` public API before external adoption.
 
