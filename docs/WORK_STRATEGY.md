@@ -79,7 +79,7 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 - Normalize Android payloads and Apple `userInfo` in a Firebase-independent `ding-core` KMP module.
 - Provide a host-owned Apple capture façade with bounded process-local and Room-backed stores.
 - Preserve Android's existing stored fields while adding platform, transport, capture-point, and raw-delivered-payload context.
-- Build and checksum a binary SwiftPM XCFramework before adding remote GitHub Release automation.
+- Publish the binary SwiftPM XCFramework as an immutable GitHub Release asset and verify remote package resolution after each release.
 - Add Notification Service Extension/App Group support as a separate follow-up slice.
 - Keep Firebase optional on Apple platforms and treat `firebase-kotlin-sdk` as an optional interoperability target.
 
