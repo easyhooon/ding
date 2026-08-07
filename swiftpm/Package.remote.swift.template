@@ -1,0 +1,26 @@
+// swift-tools-version: 5.9
+
+import PackageDescription
+
+let dingVersion = "__DING_VERSION__"
+let dingChecksum = "__DING_CHECKSUM__"
+
+let package = Package(
+    name: "Ding",
+    platforms: [
+        .iOS(.v13),
+    ],
+    products: [
+        .library(
+            name: "Ding",
+            targets: ["Ding"]
+        ),
+    ],
+    targets: [
+        .binaryTarget(
+            name: "Ding",
+            url: "https://github.com/easyhooon/ding/releases/download/\(dingVersion)/Ding.xcframework.zip",
+            checksum: dingChecksum
+        ),
+    ]
+)

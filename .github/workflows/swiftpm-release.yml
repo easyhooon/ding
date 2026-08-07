@@ -1,0 +1,21 @@
+name: SwiftPM Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-remote-package:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+
+      - name: Resolve and type-check remote package
+        run: ./swiftpm/verify-remote-release.sh "${{ github.event.release.tag_name }}"

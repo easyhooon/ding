@@ -73,6 +73,13 @@ val swiftPackageReleaseDirectory = layout.buildDirectory.dir("swiftpm/release")
 val swiftPackageArchive = swiftPackageReleaseDirectory.map {
     it.file("$appleFrameworkName.xcframework.zip")
 }
+val swiftPackageChecksum = swiftPackageReleaseDirectory.map {
+    it.file("$appleFrameworkName.xcframework.zip.sha256")
+}
+val remoteSwiftPackageTemplate = rootProject.layout.projectDirectory.file(
+    "swiftpm/Package.remote.swift.template",
+)
+val remoteSwiftPackageManifest = rootProject.layout.projectDirectory.file("Package.swift")
 
 val zipDingXCFramework by tasks.registering(Zip::class) {
     group = "distribution"
@@ -91,11 +98,8 @@ val packageDingSwiftPM by tasks.registering {
     group = "distribution"
     description = "Builds the SwiftPM XCFramework archive and checksum."
     dependsOn(zipDingXCFramework)
-    val checksumFile = swiftPackageReleaseDirectory.map {
-        it.file("$appleFrameworkName.xcframework.zip.sha256")
-    }
     inputs.file(swiftPackageArchive)
-    outputs.file(checksumFile)
+    outputs.file(swiftPackageChecksum)
     doLast {
         val checksum = providers.exec {
             commandLine(
@@ -105,7 +109,78 @@ val packageDingSwiftPM by tasks.registering {
                 swiftPackageArchive.get().asFile.absolutePath,
             )
         }.standardOutput.asText.get().trim()
-        checksumFile.get().asFile.writeText("$checksum\n")
+        swiftPackageChecksum.get().asFile.writeText("$checksum\n")
+    }
+}
+
+tasks.register("prepareDingRemoteSwiftPackage") {
+    group = "distribution"
+    description = "Writes the remote Package.swift for an exact release archive."
+    dependsOn(packageDingSwiftPM)
+    val releaseVersion = providers.gradleProperty("dingSwiftPMVersion").orElse("")
+    inputs.file(remoteSwiftPackageTemplate)
+    inputs.file(swiftPackageChecksum)
+    inputs.property("dingSwiftPMVersion", releaseVersion)
+    outputs.file(remoteSwiftPackageManifest)
+    doLast {
+        val version = releaseVersion.get()
+        require(version.isNotEmpty()) {
+            "Pass -PdingSwiftPMVersion=<semantic-version>."
+        }
+        require(Regex("[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?").matches(version)) {
+            "Invalid SwiftPM release version: $version"
+        }
+        val checksum = swiftPackageChecksum.get().asFile.readText().trim()
+        require(Regex("[0-9a-f]{64}").matches(checksum)) {
+            "Invalid SwiftPM archive checksum: $checksum"
+        }
+        val manifest = remoteSwiftPackageTemplate.asFile.readText()
+            .replace("__DING_VERSION__", version)
+            .replace("__DING_CHECKSUM__", checksum)
+        require("__DING_" !in manifest) {
+            "Remote Swift package template still contains placeholders."
+        }
+        remoteSwiftPackageManifest.asFile.writeText(manifest)
+        val swiftModuleCache = layout.buildDirectory
+            .dir("swiftpm/module-cache")
+            .get()
+            .asFile
+            .apply { mkdirs() }
+        providers.exec {
+            environment("SWIFTPM_MODULECACHE_OVERRIDE", swiftModuleCache.absolutePath)
+            commandLine(
+                "swift",
+                "package",
+                "dump-package",
+                "--package-path",
+                rootProject.layout.projectDirectory.asFile.absolutePath,
+            )
+        }.result.get().assertNormalExitValue()
+    }
+}
+
+tasks.register<Exec>("verifyDingRemoteSwiftPackageTemplate") {
+    group = "verification"
+    description = "Parses the remote Package.swift template with placeholder values."
+    val fixtureDirectory = layout.buildDirectory.dir("swiftpm/remote-manifest")
+    val fixtureManifest = fixtureDirectory.map { it.file("Package.swift") }
+    inputs.file(remoteSwiftPackageTemplate)
+    outputs.file(fixtureManifest)
+    doFirst {
+        val outputDirectory = fixtureDirectory.get().asFile.apply { mkdirs() }
+        val manifest = remoteSwiftPackageTemplate.asFile.readText()
+            .replace("__DING_VERSION__", "0.0.0")
+            .replace("__DING_CHECKSUM__", "0".repeat(64))
+        fixtureManifest.get().asFile.writeText(manifest)
+        val swiftModuleCache = outputDirectory.resolve("module-cache").apply { mkdirs() }
+        environment("SWIFTPM_MODULECACHE_OVERRIDE", swiftModuleCache.absolutePath)
+        commandLine(
+            "swift",
+            "package",
+            "dump-package",
+            "--package-path",
+            outputDirectory.absolutePath,
+        )
     }
 }
 
@@ -151,6 +226,11 @@ tasks.register<Exec>("verifyDingLocalSwiftPackage") {
     group = "verification"
     description = "Verifies that SwiftPM resolves the local Ding binary target."
     dependsOn(prepareDingLocalSwiftPackage, verifyDingSwiftImport)
+    val swiftModuleCache = layout.buildDirectory.dir("swiftpm/module-cache")
+    doFirst {
+        swiftModuleCache.get().asFile.mkdirs()
+    }
+    environment("SWIFTPM_MODULECACHE_OVERRIDE", swiftModuleCache.get().asFile.absolutePath)
     commandLine(
         "swift",
         "package",
