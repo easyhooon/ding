@@ -35,7 +35,10 @@ jobs:
       - name: Verify libraries and sample
         run: >-
           ./gradlew
-          :ding-core:ktlintCheck
+          :ding-core:ktlintCommonMainSourceSetCheck
+          :ding-core:ktlintCommonTestSourceSetCheck
+          :ding-core:ktlintAndroidMainSourceSetCheck
+          :ding-core:ktlintAndroidHostTestSourceSetCheck
           :ding-core:testAndroidHostTest
           :ding:ktlintCheck
           :ding-noop:ktlintCheck
@@ -66,5 +69,7 @@ jobs:
       - name: Verify Apple targets
         run: >-
           ./gradlew
+          :ding-core:ktlintIosMainSourceSetCheck
+          :ding-core:ktlintIosTestSourceSetCheck
           :ding-core:compileKotlinIosArm64
           :ding-core:iosSimulatorArm64Test
