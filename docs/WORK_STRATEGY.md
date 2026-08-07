@@ -12,6 +12,7 @@ The library starts from the Hime-incubated implementation, then grows toward a D
 - Phase 2 complete: Compose list, search, source filters, category affordances, and detail tabs.
 - Phase 3 complete: default persistent notification with payload-safe summaries and automatic entry-point setup.
 - Phase 4 complete: section copy, single-message sharing, filtered export, and privacy guidance.
+- Phase 5 in progress: additive KMP core and platform-specific notification adapters.
 - Ding `0.2.0` rebrands the package, API, modules, and Maven coordinates before external adoption.
 
 ## Scope
@@ -72,6 +73,14 @@ The library starts from the Hime-incubated implementation, then grows toward a D
   - all filtered messages as JSON/text
 - Keep privacy guidance visible in docs because notification payloads may contain sensitive data.
 
+### Phase 5: Kotlin Multiplatform Support
+
+- Keep the existing Android `ding` and `ding-noop` artifacts source-compatible.
+- Move payload normalization into a Firebase-independent `ding-core` KMP module.
+- Preserve Android's existing stored fields while adding platform, transport, capture-point, and raw-delivered-payload context.
+- Add the Apple APNs `userInfo` adapter, persistence, and SPM distribution as separate follow-up slices.
+- Keep Firebase optional on Apple platforms and treat `firebase-kotlin-sdk` as an optional interoperability target.
+
 ## Backlog
 
 ### Shake-To-Open
@@ -102,8 +111,8 @@ When implemented later, shake-to-open must be:
 - Avoid Hime-specific assumptions.
 - Prefer dependency choices that fit a reusable Android library:
   - DataStore over SharedPreferences.
-  - `org.json` until snapshot schema stabilizes.
-  - consider kotlinx.serialization only after schema/model boundaries settle.
+  - keep `org.json` at the Android storage boundary.
+  - use kotlinx.serialization's multiplatform JSON tree after the shared schema boundary is defined.
 
 ## Initial Repository Shape
 
@@ -112,6 +121,7 @@ ding/
 ├── docs/
 │   └── WORK_STRATEGY.md
 ├── ding/
+├── ding-core/
 ├── ding-noop/
 ├── sample/
 ├── gradle/

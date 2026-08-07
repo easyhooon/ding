@@ -1,6 +1,9 @@
 package io.github.easyhooon.ding
 
 import com.google.firebase.messaging.RemoteMessage
+import io.github.easyhooon.ding.core.DingSnapshotJson
+import io.github.easyhooon.ding.core.RemoteMessageSnapshotInput
+import io.github.easyhooon.ding.core.RemoteNotificationSnapshotInput
 import org.json.JSONObject
 
 internal object RemoteMessageSnapshot {
@@ -9,51 +12,38 @@ internal object RemoteMessageSnapshot {
         fcmToken: String?,
         receivedAtMillis: Long,
     ): JSONObject {
-        return JSONObject().apply {
-            put("type", "remote-message")
-            put("source", "fcm")
-            put("tag", NotificationFilterTag.FCM.jsonValue)
-            put("receivedAtMillis", receivedAtMillis)
-            putNullable("fcmToken", fcmToken)
-            putNullable("messageId", remoteMessage.messageId)
-            putNullable("messageType", remoteMessage.messageType)
-            putNullable("from", remoteMessage.from)
-            putNullable("collapseKey", remoteMessage.collapseKey)
-            put("sentTime", remoteMessage.sentTime)
-            put("ttl", remoteMessage.ttl)
-            put("priority", remoteMessage.priority)
-            put("originalPriority", remoteMessage.originalPriority)
-            put("data", dataJson(remoteMessage.data))
-            put("notification", notificationJson(remoteMessage.notification))
-        }
+        val input = RemoteMessageSnapshotInput(
+            messageId = remoteMessage.messageId,
+            messageType = remoteMessage.messageType,
+            from = remoteMessage.from,
+            collapseKey = remoteMessage.collapseKey,
+            sentTime = remoteMessage.sentTime,
+            ttl = remoteMessage.ttl,
+            priority = remoteMessage.priority,
+            originalPriority = remoteMessage.originalPriority,
+            data = remoteMessage.data,
+            notification = remoteMessage.notification?.toSnapshotInput(),
+        )
+        return JSONObject(
+            DingSnapshotJson.remoteMessage(
+                input = input,
+                fcmToken = fcmToken,
+                receivedAtMillis = receivedAtMillis,
+            ),
+        )
     }
 
-    private fun dataJson(data: Map<String, String>): JSONObject {
-        return JSONObject().apply {
-            data.toSortedMap().forEach { (key, value) ->
-                put(key, value)
-            }
-        }
-    }
-
-    private fun notificationJson(notification: RemoteMessage.Notification?): Any {
-        notification ?: return JSONObject.NULL
-
-        return JSONObject().apply {
-            putNullable("title", notification.title)
-            putNullable("body", notification.body)
-            putNullable("imageUrl", notification.imageUrl?.toString())
-            putNullable("channelId", notification.channelId)
-            putNullable("clickAction", notification.clickAction)
-            putNullable("color", notification.color)
-            putNullable("icon", notification.icon)
-            putNullable("link", notification.link?.toString())
-            putNullable("sound", notification.sound)
-            putNullable("tag", notification.tag)
-        }
-    }
-
-    private fun JSONObject.putNullable(name: String, value: Any?) {
-        put(name, value ?: JSONObject.NULL)
-    }
+    private fun RemoteMessage.Notification.toSnapshotInput(): RemoteNotificationSnapshotInput =
+        RemoteNotificationSnapshotInput(
+            title = title,
+            body = body,
+            imageUrl = imageUrl?.toString(),
+            channelId = channelId,
+            clickAction = clickAction,
+            color = color,
+            icon = icon,
+            link = link?.toString(),
+            sound = sound,
+            tag = tag,
+        )
 }

@@ -21,6 +21,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Ding"
+include(":ding-core")
 include(":ding")
 include(":ding-noop")
 include(":sample")

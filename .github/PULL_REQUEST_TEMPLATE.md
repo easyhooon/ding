@@ -14,6 +14,10 @@
 
 ## Validation
 
+- [ ] `:ding-core:ktlintCheck`
+- [ ] `:ding-core:testAndroidHostTest`
+- [ ] `:ding-core:compileKotlinIosArm64`
+- [ ] `:ding-core:compileKotlinIosSimulatorArm64`
 - [ ] `:ding:ktlintCheck`
 - [ ] `:ding-noop:ktlintCheck`
 - [ ] `:ding:detekt`
