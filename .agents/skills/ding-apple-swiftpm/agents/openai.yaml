@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ding Apple & SwiftPM"
+  short_description: "Develop and validate Ding Apple and SwiftPM support"
+  default_prompt: "Use $ding-apple-swiftpm to develop or validate Ding Apple and SwiftPM integration."

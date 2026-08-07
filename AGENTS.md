@@ -28,4 +28,5 @@
 ## Skills
 
 - Code review follow-up: use the `/resolve-coderabbit-review` skill to triage and apply CodeRabbit comments on the current PR.
+- Apple and SwiftPM development: use the `/ding-apple-swiftpm` skill when changing or diagnosing Ding's Apple targets, APNs capture, XCFramework, or SwiftPM integration.
 - Release: use the `/release` skill to publish to Maven Central and draft GitHub release notes.
