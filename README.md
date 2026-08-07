@@ -37,7 +37,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 The debug and no-op artifacts share version `0.3.0`.
 
-Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module now owns payload normalization while the existing Android coordinates and `Ding.capture(...)` API remain unchanged. Apple capture and Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
+Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module now normalizes Android payloads and Apple `userInfo` while the existing Android coordinates and `Ding.capture(...)` API remain unchanged. Apple host capture, persistence, and Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
 Initial supported capture paths:
 
