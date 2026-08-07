@@ -37,7 +37,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 The debug and no-op artifacts share version `0.3.0`.
 
-Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. Apple persistence and Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
+Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local or path-backed storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
 Initial supported capture paths:
 
@@ -132,7 +132,10 @@ Call the same API with `enabled = true` to restore it. The explicit choice persi
 `ding-core` provides a host-owned capture façade for forwarding the original APNs `userInfo` without installing or replacing notification delegates:
 
 ```kotlin
-val ding = DingAppleCapture(InMemoryDingCaptureStore())
+val store = PersistentDingCaptureStore.get(
+    storagePath = dingStoragePath,
+)
+val ding = DingAppleCapture(store)
 
 ding.updateFcmToken(latestFcmToken)
 ding.captureAppleUserInfo(
@@ -142,7 +145,9 @@ ding.captureAppleUserInfo(
 )
 ```
 
-FCM and APNs tokens are cached separately, and every snapshot retains the token that was current when it was captured. `InMemoryDingCaptureStore` keeps the newest 50 snapshots for the current process. Persistent Apple storage and the Swift Package Manager façade are intentionally separate follow-up steps; this preview is primarily for KMP source integration.
+FCM and APNs tokens are cached separately, and every snapshot retains the token that was current when it was captured. The host must supply one stable, app-private path ending in `.preferences_pb`; the default retention is the newest 50 snapshots. Reuse the returned store instead of creating competing DataStore instances for the same path.
+
+`InMemoryDingCaptureStore` remains available when process-local history is sufficient. The persistent store currently targets callbacks in the main app process. Notification Service Extension/App Group sharing and the Swift Package Manager façade are intentionally separate follow-up steps, so this API is primarily for KMP source integration.
 
 ## Strategy
 
