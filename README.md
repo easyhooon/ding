@@ -37,7 +37,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 The debug and no-op artifacts share version `0.3.0`.
 
-Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module now normalizes Android payloads and Apple `userInfo` while the existing Android coordinates and `Ding.capture(...)` API remain unchanged. Apple host capture, persistence, and Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
+Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. Apple persistence and Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
 Initial supported capture paths:
 
@@ -126,6 +126,23 @@ Ding.setPersistentNotificationEnabled(context, enabled = false)
 ```
 
 Call the same API with `enabled = true` to restore it. The explicit choice persists across process restarts. On Android 13 and newer, the host app remains responsible for requesting `POST_NOTIFICATIONS` at an appropriate time.
+
+### KMP Apple capture preview
+
+`ding-core` provides a host-owned capture façade for forwarding the original APNs `userInfo` without installing or replacing notification delegates:
+
+```kotlin
+val ding = DingAppleCapture(InMemoryDingCaptureStore())
+
+ding.updateFcmToken(latestFcmToken)
+ding.captureAppleUserInfo(
+    userInfo = userInfo,
+    transport = PushTransport.FCM_APNS,
+    capturePoint = CapturePoint.FOREGROUND,
+)
+```
+
+FCM and APNs tokens are cached separately, and every snapshot retains the token that was current when it was captured. `InMemoryDingCaptureStore` keeps the newest 50 snapshots for the current process. Persistent Apple storage and the Swift Package Manager façade are intentionally separate follow-up steps; this preview is primarily for KMP source integration.
 
 ## Strategy
 
