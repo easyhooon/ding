@@ -1,5 +1,8 @@
 package io.github.easyhooon.ding.core
 
+import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,6 +39,27 @@ class PersistentDingCaptureStoreTest {
 
         assertEquals(emptyList(), store.snapshots())
         assertEquals("fcm-token", store.registrationToken(RegistrationTokenKind.FCM))
+    }
+
+    @Test
+    fun openingRoomStoreAppliesRetentionToExistingRows() = runTest {
+        val storagePath = temporaryPersistentStorePath()
+        val database = Room.databaseBuilder<DingDatabase>(
+            name = storagePath,
+            factory = { DingDatabaseConstructor.initialize() },
+        ).setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.Default)
+            .build()
+        database.dingDao().apply {
+            insertSnapshot(NotificationSnapshotEntity.from("first"))
+            insertSnapshot(NotificationSnapshotEntity.from("second"))
+            insertSnapshot(NotificationSnapshotEntity.from("third"))
+        }
+        database.close()
+
+        val store = PersistentDingCaptureStore.get(storagePath, maxSnapshots = 2)
+
+        assertEquals(listOf("second", "third"), store.snapshots())
     }
 
     @Test

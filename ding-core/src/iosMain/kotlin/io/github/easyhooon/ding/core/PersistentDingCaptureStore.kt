@@ -65,8 +65,10 @@ public class PersistentDingCaptureStore private constructor(
                 ).setDriver(BundledSQLiteDriver())
                     .setQueryCoroutineContext(Dispatchers.Default)
                     .build()
+                val dao = database.dingDao()
+                dao.trimSnapshots(maxSnapshots)
                 val store = PersistentDingCaptureStore(
-                    dao = database.dingDao(),
+                    dao = dao,
                     maxSnapshots = maxSnapshots,
                 )
                 stores[storagePath] = StoreRegistration(store, maxSnapshots)
