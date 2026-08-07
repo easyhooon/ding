@@ -1,4 +1,9 @@
+import org.gradle.api.tasks.Sync
+import org.gradle.api.tasks.bundling.Zip
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
+val appleFrameworkName = "Ding"
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -10,6 +15,8 @@ plugins {
 
 kotlin {
     explicitApi()
+
+    val appleXCFramework = XCFramework(appleFrameworkName)
 
     androidLibrary {
         namespace = "io.github.easyhooon.ding.core"
@@ -23,8 +30,16 @@ kotlin {
         withHostTest {}
     }
 
-    iosArm64()
-    iosSimulatorArm64()
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { target ->
+        target.binaries.framework {
+            baseName = appleFrameworkName
+            isStatic = true
+            appleXCFramework.add(this)
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -49,6 +64,100 @@ dependencies {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+val releaseXCFramework = layout.buildDirectory.dir(
+    "XCFrameworks/release/$appleFrameworkName.xcframework",
+)
+val swiftPackageReleaseDirectory = layout.buildDirectory.dir("swiftpm/release")
+val swiftPackageArchive = swiftPackageReleaseDirectory.map {
+    it.file("$appleFrameworkName.xcframework.zip")
+}
+
+val zipDingXCFramework by tasks.registering(Zip::class) {
+    group = "distribution"
+    description = "Archives the release Ding XCFramework for SwiftPM distribution."
+    dependsOn("assemble${appleFrameworkName}ReleaseXCFramework")
+    from(releaseXCFramework) {
+        into("$appleFrameworkName.xcframework")
+    }
+    archiveFileName.set("$appleFrameworkName.xcframework.zip")
+    destinationDirectory.set(swiftPackageReleaseDirectory)
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
+val packageDingSwiftPM by tasks.registering {
+    group = "distribution"
+    description = "Builds the SwiftPM XCFramework archive and checksum."
+    dependsOn(zipDingXCFramework)
+    val checksumFile = swiftPackageReleaseDirectory.map {
+        it.file("$appleFrameworkName.xcframework.zip.sha256")
+    }
+    inputs.file(swiftPackageArchive)
+    outputs.file(checksumFile)
+    doLast {
+        val checksum = providers.exec {
+            commandLine(
+                "swift",
+                "package",
+                "compute-checksum",
+                swiftPackageArchive.get().asFile.absolutePath,
+            )
+        }.standardOutput.asText.get().trim()
+        checksumFile.get().asFile.writeText("$checksum\n")
+    }
+}
+
+val prepareDingLocalSwiftPackage by tasks.registering(Sync::class) {
+    group = "distribution"
+    description = "Prepares a local Swift package containing the release XCFramework."
+    dependsOn("assemble${appleFrameworkName}ReleaseXCFramework")
+    from(rootProject.layout.projectDirectory.file("swiftpm/Package.swift"))
+    from(releaseXCFramework) {
+        into("Artifacts/$appleFrameworkName.xcframework")
+    }
+    into(layout.buildDirectory.dir("swiftpm/local"))
+}
+
+val verifyDingSwiftImport by tasks.registering(Exec::class) {
+    group = "verification"
+    description = "Type-checks Ding's exported API with the Swift compiler."
+    dependsOn(prepareDingLocalSwiftPackage)
+    val simulatorSdkPath = providers.exec {
+        commandLine("xcrun", "--sdk", "iphonesimulator", "--show-sdk-path")
+    }.standardOutput.asText.map { it.trim() }
+    doFirst {
+        commandLine(
+            "xcrun",
+            "swiftc",
+            "-typecheck",
+            "-target",
+            "arm64-apple-ios13.0-simulator",
+            "-sdk",
+            simulatorSdkPath.get(),
+            "-F",
+            layout.buildDirectory
+                .dir("swiftpm/local/Artifacts/$appleFrameworkName.xcframework/ios-arm64-simulator")
+                .get()
+                .asFile
+                .absolutePath,
+            rootProject.layout.projectDirectory.file("swiftpm/Smoke.swift").asFile.absolutePath,
+        )
+    }
+}
+
+tasks.register<Exec>("verifyDingLocalSwiftPackage") {
+    group = "verification"
+    description = "Verifies that SwiftPM resolves the local Ding binary target."
+    dependsOn(prepareDingLocalSwiftPackage, verifyDingSwiftImport)
+    commandLine(
+        "swift",
+        "package",
+        "describe",
+        "--package-path",
+        layout.buildDirectory.dir("swiftpm/local").get().asFile.absolutePath,
+    )
 }
 
 mavenPublishing {

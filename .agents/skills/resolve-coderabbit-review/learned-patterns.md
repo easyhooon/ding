@@ -20,6 +20,7 @@ This file records recurring CodeRabbit findings and their outcomes. When the sam
 | Disable persisted checkout credentials in read-only CI jobs | 1 | #15 | 2026-08-07 |
 | Keep documented API entry-point names consistent in examples | 1 | #15 | 2026-08-07 |
 | Enforce bounded retention when reopening persistent stores | 1 | #18 | 2026-08-07 |
+| Defer host-only tool lookups until task execution | 1 | #20 | 2026-08-07 |
 
 ## Declined patterns
 

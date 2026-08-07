@@ -73,3 +73,5 @@ jobs:
           :ding-core:ktlintIosTestSourceSetCheck
           :ding-core:compileKotlinIosArm64
           :ding-core:iosSimulatorArm64Test
+          :ding-core:packageDingSwiftPM
+          :ding-core:verifyDingLocalSwiftPackage
