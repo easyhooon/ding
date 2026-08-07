@@ -127,22 +127,24 @@ val verifyDingSwiftImport by tasks.registering(Exec::class) {
     val simulatorSdkPath = providers.exec {
         commandLine("xcrun", "--sdk", "iphonesimulator", "--show-sdk-path")
     }.standardOutput.asText.map { it.trim() }
-    commandLine(
-        "xcrun",
-        "swiftc",
-        "-typecheck",
-        "-target",
-        "arm64-apple-ios13.0-simulator",
-        "-sdk",
-        simulatorSdkPath.get(),
-        "-F",
-        layout.buildDirectory
-            .dir("swiftpm/local/Artifacts/$appleFrameworkName.xcframework/ios-arm64-simulator")
-            .get()
-            .asFile
-            .absolutePath,
-        rootProject.layout.projectDirectory.file("swiftpm/Smoke.swift").asFile.absolutePath,
-    )
+    doFirst {
+        commandLine(
+            "xcrun",
+            "swiftc",
+            "-typecheck",
+            "-target",
+            "arm64-apple-ios13.0-simulator",
+            "-sdk",
+            simulatorSdkPath.get(),
+            "-F",
+            layout.buildDirectory
+                .dir("swiftpm/local/Artifacts/$appleFrameworkName.xcframework/ios-arm64-simulator")
+                .get()
+                .asFile
+                .absolutePath,
+            rootProject.layout.projectDirectory.file("swiftpm/Smoke.swift").asFile.absolutePath,
+        )
+    }
 }
 
 tasks.register<Exec>("verifyDingLocalSwiftPackage") {
