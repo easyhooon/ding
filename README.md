@@ -37,7 +37,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 The debug and no-op artifacts share version `0.3.0`.
 
-Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local or path-backed storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. Swift Package Manager distribution will follow separately; see [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
+Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local or Room-backed storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. A SwiftPM-ready XCFramework archive can now be built locally; remote package distribution will follow separately. See [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
 Initial supported capture paths:
 
@@ -147,7 +147,16 @@ ding.captureAppleUserInfo(
 
 FCM and APNs tokens are stored separately, and every snapshot retains the token that was current when it was captured. The host must supply one stable, app-private path ending in `.db`; the Room-backed store keeps the newest 50 snapshots by default. Reuse the returned store for that path.
 
-`InMemoryDingCaptureStore` remains available when process-local history is sufficient. The persistent store currently targets callbacks in the main app process. Notification Service Extension/App Group sharing and the Swift Package Manager façade are intentionally separate follow-up steps, so this API is primarily for KMP source integration.
+`InMemoryDingCaptureStore` remains available when process-local history is sufficient. The persistent store currently targets callbacks in the main app process. Notification Service Extension/App Group sharing remains a separate follow-up step.
+
+The SwiftPM packaging foundation can be verified locally on macOS:
+
+```bash
+./gradlew :ding-core:packageDingSwiftPM
+./gradlew :ding-core:verifyDingLocalSwiftPackage
+```
+
+The first task writes `Ding.xcframework.zip` and its SwiftPM checksum under `ding-core/build/swiftpm/release`. The second resolves the local binary target and type-checks Ding's exported API with the Swift compiler. Publishing those files as versioned GitHub Release assets and switching the manifest to a remote URL are intentionally handled in a follow-up release-automation slice.
 
 ## Strategy
 
