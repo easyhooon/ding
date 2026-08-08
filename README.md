@@ -129,6 +129,12 @@ override fun onMessageReceived(remoteMessage: RemoteMessage) {
 }
 ```
 
+### Android FCM capture limitation
+
+Ding cannot capture an FCM message through `onMessageReceived` while the Android app is in the background if the message contains a `notification` block. In that state, the FCM SDK handles the notification and delivers it directly to the system tray instead of invoking `FirebaseMessagingService.onMessageReceived`, so the call to `Ding.capture(...)` never runs.
+
+The same limitation applies to messages containing both `notification` and `data`: while the app is in the background, the notification is delivered to the system tray and the data payload is made available through the launcher Activity intent after the user taps the notification. If background capture through Ding is required, send a data-only FCM message and create the user-visible notification from `onMessageReceived`. See Firebase's official documentation on [receiving messages in Android apps](https://firebase.google.com/docs/cloud-messaging/android/receive-messages) and [FCM message types](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type).
+
 `RemoteMessage` does not expose the registration token targeted by the sender. Keep Ding's latest-token cache synchronized from `FirebaseMessagingService.onNewToken`:
 
 ```kotlin

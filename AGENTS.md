@@ -6,6 +6,12 @@
 - Do NOT include "Generated with Codex" or similar AI attribution in PR descriptions.
 - **Keep commit messages compact.** Subject ≤ 72 chars. Body only when the "why" isn't obvious from the diff — 1–3 short lines, no multi-paragraph essays. Don't restate what the diff already shows.
 
+## Branch Rules
+
+- Do NOT use the `codex/` prefix for branch names.
+- Use conventional, change-specific prefixes such as `feat/`, `fix/`, `refactor/`, `docs/`, or `chore/`.
+- Delete completed branches after they have been merged into `main`.
+
 ## Code Style
 
 - Do NOT use fully-qualified names (FQN) inline in Kotlin code. Always add a proper `import` statement at the top of the file and reference the type by its simple name. This applies to both production and test code.
