@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "io.github.easyhooon.ding.sample"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"

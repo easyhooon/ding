@@ -9,7 +9,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 29
+        minSdk = 28
         buildConfigField("String", "DING_VERSION", "\"${libs.versions.ding.get()}\"")
     }
 

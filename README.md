@@ -35,7 +35,7 @@ See notification history at a glance, then drill into capture metadata and raw p
 
 ## Current Status
 
-The published Maven artifacts share version `0.5.0`.
+The published Maven artifacts share version `0.5.1`.
 
 Kotlin Multiplatform support is being added incrementally. The shared `ding-core` module normalizes Android payloads and Apple `userInfo` and provides an Apple capture façade with process-local or Room-backed storage. The existing Android coordinates and `Ding.capture(...)` API remain unchanged. Native Apple distribution uses a static XCFramework through Swift Package Manager starting with `0.5.0`. See [the KMP/iOS research note](docs/research/kmp-ios-push-support.md).
 
@@ -75,12 +75,12 @@ These are alternative integration paths, not three required dependencies. A KMP 
 
 ```kotlin
 dependencies {
-    debugImplementation("io.github.easyhooon:ding:0.5.0")
-    releaseImplementation("io.github.easyhooon:ding-noop:0.5.0")
+    debugImplementation("io.github.easyhooon:ding:0.5.1")
+    releaseImplementation("io.github.easyhooon:ding-noop:0.5.1")
 }
 ```
 
-`ding` resolves `ding-core` transitively. Android applications should not add the core artifact or its platform variants separately.
+`ding` supports Android 9 (API 28) and newer and resolves `ding-core` transitively. Android applications should not add the core artifact or its platform variants separately.
 
 ### Kotlin Multiplatform
 
@@ -90,7 +90,7 @@ Add the shared core only when capturing and processing notification snapshots fr
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.easyhooon:ding-core:0.5.0")
+            implementation("io.github.easyhooon:ding-core:0.5.1")
         }
     }
 }

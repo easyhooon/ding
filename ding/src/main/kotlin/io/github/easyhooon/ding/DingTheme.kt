@@ -2,6 +2,7 @@ package io.github.easyhooon.ding
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -57,7 +58,9 @@ private fun ApplyDingSystemBars(isDark: Boolean, background: Color) {
             statusBarStyle = statusBarStyle,
             navigationBarStyle = navigationBarStyle,
         )
-        activity.window.isNavigationBarContrastEnforced = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity.window.isNavigationBarContrastEnforced = false
+        }
         WindowCompat.getInsetsController(activity.window, activity.window.decorView).apply {
             isAppearanceLightStatusBars = !isDark
             isAppearanceLightNavigationBars = !isDark

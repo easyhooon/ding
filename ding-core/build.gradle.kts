@@ -21,7 +21,7 @@ kotlin {
     androidLibrary {
         namespace = "io.github.easyhooon.ding.core"
         compileSdk = 36
-        minSdk = 29
+        minSdk = 28
 
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
