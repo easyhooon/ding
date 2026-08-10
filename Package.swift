@@ -2,7 +2,7 @@
 
 import PackageDescription
 
-let dingVersion = "0.5.0"
+let dingVersion = "0.5.1"
 let dingChecksum = "d5230e37d7ba8caaf62706f01f91bbd2d1016a3422088b765586ae06bc1b9d84"
 
 let package = Package(
