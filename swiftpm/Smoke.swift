@@ -13,3 +13,22 @@ func openStore(path: String) {
         _ = error
     }
 }
+
+func captureAndRead(
+    capture: DingAppleCapture,
+    userInfo: [AnyHashable: Any]
+) {
+    capture.captureAppleUserInfo(
+        userInfo: userInfo,
+        transport: .apns,
+        capturePoint: .foreground
+    ) { snapshot, error in
+        _ = snapshot
+        _ = error
+
+        capture.snapshots { snapshots, snapshotsError in
+            _ = snapshots
+            _ = snapshotsError
+        }
+    }
+}

@@ -50,6 +50,7 @@ jobs:
           :sample:assembleRelease
 
   verify-apple:
+    timeout-minutes: 30
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -67,6 +68,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Verify Apple targets
+        env:
+          DING_E2E_DUMP_LOGS: "1"
         run: >-
           ./gradlew
           :ding-core:ktlintIosMainSourceSetCheck
@@ -76,3 +79,4 @@ jobs:
           :ding-core:packageDingSwiftPM
           :ding-core:verifyDingRemoteSwiftPackageTemplate
           :ding-core:verifyDingLocalSwiftPackage
+          :ding-core:verifyDingIosSimulatorPushCapture

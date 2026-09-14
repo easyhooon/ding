@@ -1,0 +1,15 @@
+{
+  "Simulator Target Bundle": "io.github.easyhooon.ding.push-test-host",
+  "aps": {
+    "alert": {
+      "title": "Ding Simulator E2E",
+      "body": "Foreground callback capture"
+    },
+    "sound": "default"
+  },
+  "ding-e2e-id": "foreground-v1",
+  "nested": {
+    "count": 3,
+    "enabled": true
+  }
+}
