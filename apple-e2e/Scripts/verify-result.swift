@@ -93,6 +93,7 @@ do {
         ("aps.alert.body", "notification.body"),
         ("aps.alert.title", "rawDeliveredPayload.aps.alert.title"),
         ("aps.alert.body", "rawDeliveredPayload.aps.alert.body"),
+        ("aps.sound", "rawDeliveredPayload.aps.sound"),
         ("ding-e2e-id", "data.ding-e2e-id"),
         ("ding-e2e-id", "rawDeliveredPayload.ding-e2e-id"),
         ("nested.count", "data.nested.count"),
