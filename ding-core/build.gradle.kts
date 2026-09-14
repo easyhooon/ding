@@ -240,6 +240,18 @@ tasks.register<Exec>("verifyDingLocalSwiftPackage") {
     )
 }
 
+tasks.register<Exec>("verifyDingIosSimulatorPushCapture") {
+    group = "verification"
+    description = "Verifies foreground Apple push capture in an iOS Simulator."
+    dependsOn(prepareDingLocalSwiftPackage)
+    val appleE2eDirectory = rootProject.layout.projectDirectory.dir("apple-e2e")
+    val verificationScript = appleE2eDirectory.file("Scripts/verify-simulator-push.sh")
+    inputs.dir(appleE2eDirectory)
+    environment("DING_E2E_SWIFT_PACKAGE_PREPARED", "1")
+    workingDir(rootProject.layout.projectDirectory)
+    commandLine("/bin/sh", verificationScript.asFile.absolutePath)
+}
+
 mavenPublishing {
     coordinates(
         groupId = "io.github.easyhooon",
