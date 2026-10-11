@@ -1,5 +1,7 @@
 # Ding
 
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/easyhooon/ding?utm_source=readme&utm_medium=badge)
+
 Android notification payload inspector for debug builds.
 
 > `Ding` takes its name from the short sound of a notification arriving—a small cue that something happened and is ready to inspect.
