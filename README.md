@@ -10,6 +10,27 @@ Ding captures notification-related payload snapshots from real apps and provides
 
 See notification history at a glance, then drill into capture metadata and raw payloads when something looks wrong.
 
+## Star History
+
+GitHub stars for `easyhooon/ding` over time.
+
+<a href="https://www.star-history.com/#easyhooon/ding&amp;Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=easyhooon%2Fding&amp;type=Date&amp;theme=dark" />
+    <img alt="Ding GitHub star history" src="https://api.star-history.com/svg?repos=easyhooon%2Fding&amp;type=Date" />
+  </picture>
+</a>
+
+## Downloads
+
+[![Scarf downloads for Ding](https://api.scarf.sh/v2/packages/Easyhooon/2c4a434c-5e35-47f7-8619-a8b85279dc8a/downloads-badge)](https://app.scarf.sh/packages/Easyhooon/repository-jvm/io.github.easyhooon%2Fding)
+
+![Observed Ding rolling 30-day downloads](https://raw.githubusercontent.com/easyhooon/ding/ding-downloads-data/docs/downloads-30d-observed.svg)
+
+Each point is a daily observation of [Scarf's public monthly downloads badge](https://api.scarf.sh/v2/packages/Easyhooon/2c4a434c-5e35-47f7-8619-a8b85279dc8a/downloads-badge) for the single Maven Central artifact `io.github.easyhooon:ding`. It is a **preceding 30-day count**, not downloads on that day or unique users. The chart starts on October 13, 2026; earlier observations cannot be reconstructed from this badge. A scheduled GitHub Action records the public count each day and updates the SVG. The graph states its observed period and last update time.
+
+This scope excludes `ding-core`, `ding-noop`, platform artifacts, Dari, and the rest of the Easyhooon namespace. A build can fetch several artifacts together, so adding their counts would not estimate users. [Scarf says](https://docs.scarf.sh/package-registry-integrations-maven-central/) Maven Central data typically appears about a week after a download.
+
 ## Screenshots
 
 <table>
