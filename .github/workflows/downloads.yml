@@ -40,13 +40,23 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          ref: ding-downloads-data
+          path: stats-data
       - name: Sample public Scarf badge
-        run: python3 scripts/update-downloads.py
+        run: |
+          python3 scripts/update-downloads.py \
+            --data-path stats-data/docs/downloads-30d-observed.csv \
+            --svg-path stats-data/docs/downloads-30d-observed.svg
       - name: Commit chart if changed
+        working-directory: stats-data
         run: |
           git add docs/downloads-30d-observed.csv docs/downloads-30d-observed.svg
           if git diff --cached --quiet; then exit 0; fi
           git -c user.name='github-actions[bot]' \
             -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
             commit -m 'docs: update Ding downloads observation'
-          git push
+          git push origin HEAD:ding-downloads-data
